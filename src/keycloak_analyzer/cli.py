@@ -47,6 +47,12 @@ logger = logging.getLogger(__name__)
 @click.option(
     "--verbose", "-v", is_flag=True, help="Enable verbose logging"
 )
+@click.option(
+    "--group-by-realm",
+    "-g",
+    is_flag=True,
+    help="Group findings by realm in console output",
+)
 def analyze(
     path: str,
     format: str,
@@ -55,6 +61,7 @@ def analyze(
     no_fail: bool,
     quiet: bool,
     verbose: bool,
+    group_by_realm: bool,
 ):
     """
     Analyze Keycloak realm configurations for security issues.
@@ -154,7 +161,7 @@ def analyze(
 
         if format == "console" or (format == "all" and not quiet):
             reporter = ConsoleReporter()
-            reporter.generate(findings, summary)
+            reporter.generate(findings, summary, group_by_realm=group_by_realm)
 
         if format == "json" or format == "all":
             if not output:

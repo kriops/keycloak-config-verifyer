@@ -135,6 +135,12 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
+# Ruff
+.ruff_cache/
+
+# Pytest
+.pytest_cache/
+
 # IDE
 .vscode/
 .idea/
@@ -149,7 +155,15 @@ Thumbs.db
 # Project specific
 *.Zone.Identifier
 .claude/
+
+# Keycloak Analyzer outputs
 reports/
+output/
 *.html
 *.json
 !tests/fixtures/*.json
+!docs/**/*.json
+security-report.*
+keycloak-report.*
+*-report.html
+*-report.json

@@ -2,7 +2,7 @@
 
 Complete documentation of all security checks implemented in the Keycloak Configuration Security Analyzer.
 
-**Total Checks**: 18
+**Total Checks**: 24
 
 ## Table of Contents
 
@@ -12,11 +12,15 @@ Complete documentation of all security checks implemented in the Keycloak Config
   - [KC-PKCE-001: PKCE Not Enforced](#kc-pkce-001-pkce-not-enforced)
   - [KC-PKCE-002: Weak PKCE Method (plain)](#kc-pkce-002-weak-pkce-method-(plain))
   - [KC-REDIR-001: Wildcard Redirect URI](#kc-redir-001-wildcard-redirect-uri)
-- [High Severity (4 checks)](#-severity-4-checks)
+- [High Severity (8 checks)](#-severity-8-checks)
   - [KC-REDIR-002: HTTP Redirect URI (Non-Localhost)](#kc-redir-002-http-redirect-uri-(non-localhost))
+  - [KC-REDIR-003: Localhost in Production Redirect URIs](#kc-redir-003-localhost-in-production-redirect-uris)
+  - [KC-REDIR-004: Path Traversal in Redirect URIs](#kc-redir-004-path-traversal-in-redirect-uris)
+  - [KC-REDIR-005: Dangerous URI Schemes](#kc-redir-005-dangerous-uri-schemes)
   - [KC-TLS-001: SSL Not Required](#kc-tls-001-ssl-not-required)
   - [KC-TOKEN-001: Excessive Access Token Lifespan](#kc-token-001-excessive-access-token-lifespan)
   - [KC-TOKEN-002: Refresh Token Reuse Allowed](#kc-token-002-refresh-token-reuse-allowed)
+  - [KC-TOKEN-005: Bearer Tokens Not Sender-Constrained](#kc-token-005-bearer-tokens-not-sender-constrained)
 - [Medium Severity (6 checks)](#-severity-6-checks)
   - [KC-AUTH-001: Confidential Client Without Authentication](#kc-auth-001-confidential-client-without-authentication)
   - [KC-AUTH-002: Using Symmetric Client Authentication](#kc-auth-002-using-symmetric-client-authentication)
@@ -24,8 +28,10 @@ Complete documentation of all security checks implemented in the Keycloak Config
   - [KC-TLS-002: SSL External Only](#kc-tls-002-ssl-external-only)
   - [KC-TOKEN-003: Full Scope Allowed](#kc-token-003-full-scope-allowed)
   - [KC-TOKEN-004: Excessive Implicit Flow Token Lifespan](#kc-token-004-excessive-implicit-flow-token-lifespan)
-- [Low Severity (1 checks)](#-severity-1-checks)
+- [Low Severity (3 checks)](#-severity-3-checks)
   - [KC-SEC-001: Brute Force Protection Disabled](#kc-sec-001-brute-force-protection-disabled)
+  - [KC-MISC-005: Service Accounts Enabled (Review)](#kc-misc-005-service-accounts-enabled-review)
+  - [KC-MISC-006: No User Consent Required](#kc-misc-006-no-user-consent-required)
 - [Info Severity (2 checks)](#-severity-2-checks)
   - [KC-BP-001: Missing Client Description](#kc-bp-001-missing-client-description)
   - [KC-INFO-001: Client Secrets in Export](#kc-info-001-client-secrets-in-export)
@@ -129,11 +135,11 @@ for redirect URIs. Wildcards enable subdomain takeover and open redirect attacks
 ---
 
 
-## High Severity (4 checks)
+## High Severity (8 checks)
 
 ### KC-REDIR-002: HTTP Redirect URI (Non-Localhost)
 
-**Category**: Redirect URI Validation  
+**Category**: Redirect URI Validation
 **Severity**: High
 
 **Description**:
@@ -145,6 +151,59 @@ except for localhost (native apps).
 **Standards & References**:
 - RFC 8252 - OAuth 2.0 for Native Apps
 - RFC 9700 Transport Security
+
+---
+
+### KC-REDIR-003: Localhost in Production Redirect URIs
+
+**Category**: Redirect URI Validation
+**Severity**: High
+
+**Description**:
+Check for localhost redirect URIs in production.
+
+Development URIs (localhost, 127.0.0.1) in production configurations
+expose systems to local attacks and session hijacking.
+
+**Standards & References**:
+- RFC 8252 - OAuth 2.0 for Native Apps
+- OAuth 2.0 Security Best Practices
+
+---
+
+### KC-REDIR-004: Path Traversal in Redirect URIs
+
+**Category**: Redirect URI Validation
+**Severity**: High
+
+**Description**:
+Check for path traversal patterns in redirect URIs.
+
+Parser differential attacks using ../, @, and URL encoding can bypass
+naive validation and redirect authorization codes to attacker-controlled domains.
+
+**Standards & References**:
+- RFC 9700 Section 4.1.1 - Redirect URI Validation
+- OAuth 2.0 Redirect URI Validation Research (2023)
+- Parser Differential Attacks
+
+---
+
+### KC-REDIR-005: Dangerous URI Schemes
+
+**Category**: Redirect URI Validation
+**Severity**: High
+
+**Description**:
+Check for dangerous URI schemes in redirect URIs.
+
+javascript:, data:, vbscript:, file:, and other dangerous schemes can execute
+code or access local files, enabling XSS and other attacks.
+
+**Standards & References**:
+- RFC 9700 - Redirect URI Security
+- OWASP XSS Prevention
+- CVE-2023-28131 - Expo OAuth URI Scheme Vulnerability
 
 ---
 
@@ -183,7 +242,7 @@ Recommended: 5-15 minutes (300-900 seconds).
 
 ### KC-TOKEN-002: Refresh Token Reuse Allowed
 
-**Category**: Token Security  
+**Category**: Token Security
 **Severity**: High
 
 **Description**:
@@ -194,6 +253,25 @@ RFC 9700: Refresh token rotation SHOULD be implemented for public clients.
 **Standards & References**:
 - RFC 9700 Section 4.3.3 - Refresh Token Rotation
 - OAuth 2.1 - Refresh Token Protection
+
+---
+
+### KC-TOKEN-005: Bearer Tokens Not Sender-Constrained
+
+**Category**: Token Security
+**Severity**: High
+
+**Description**:
+Check if bearer tokens are not sender-constrained.
+
+RFC 9700: Bearer tokens SHOULD be sender-constrained using DPoP (RFC 9449)
+or mTLS (RFC 8705) to prevent token theft and replay attacks.
+
+**Standards & References**:
+- RFC 9700 - Sender-Constrained Tokens
+- RFC 9449 - OAuth 2.0 Demonstrating Proof-of-Possession (DPoP)
+- RFC 8705 - OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens
+- Cloudflare/Okta Breach (November 2023) - Unrotated bearer token
 
 ---
 
@@ -300,11 +378,11 @@ lifespans should be very short.
 ---
 
 
-## Low Severity (1 checks)
+## Low Severity (3 checks)
 
 ### KC-SEC-001: Brute Force Protection Disabled
 
-**Category**: Miscellaneous  
+**Category**: Miscellaneous
 **Severity**: Low
 
 **Description**:
@@ -315,6 +393,40 @@ Brute force protection helps prevent password guessing attacks.
 **Standards & References**:
 - OWASP - Brute Force Attack Prevention
 - Keycloak Security Best Practices
+
+---
+
+### KC-MISC-005: Service Accounts Enabled (Review)
+
+**Category**: Miscellaneous
+**Severity**: Low
+
+**Description**:
+Check if service accounts are enabled. Review necessity and audit usage.
+
+While not inherently insecure, service accounts (client credentials grant) should
+be reviewed to ensure they are necessary and properly audited.
+
+**Standards & References**:
+- OAuth 2.0 Client Credentials Grant
+- Service Account Best Practices
+
+---
+
+### KC-MISC-006: No User Consent Required
+
+**Category**: Miscellaneous
+**Severity**: Low
+
+**Description**:
+Check if user consent is not required for third-party apps.
+
+For third-party applications, users should explicitly approve access to their data
+for transparency and compliance with privacy regulations.
+
+**Standards & References**:
+- OpenID Connect Core - Consent
+- OAuth 2.0 User Consent Best Practices
 
 ---
 

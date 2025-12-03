@@ -291,3 +291,195 @@ class FullScopeAllowedCheck(SecurityCheck):
             )
 
         return findings
+
+
+@security_check
+class BearerTokensNotSenderConstrainedCheck(SecurityCheck):
+    """
+    Check if bearer tokens are not sender-constrained.
+
+    RFC 9700: Bearer tokens SHOULD be sender-constrained using DPoP (RFC 9449)
+    or mTLS (RFC 8705) to prevent token theft and replay attacks.
+    """
+
+    check_id = "KC-TOKEN-005"
+    check_name = "Bearer Tokens Not Sender-Constrained"
+    category = FindingCategory.TOKEN_SECURITY
+    default_severity = Severity.HIGH
+    references = [
+        "RFC 9700 - Sender-Constrained Tokens",
+        "RFC 9449 - OAuth 2.0 Demonstrating Proof-of-Possession (DPoP)",
+        "RFC 8705 - OAuth 2.0 Mutual-TLS Client Authentication and Certificate-Bound Access Tokens",
+        "Cloudflare/Okta Breach (November 2023) - Unrotated bearer token",
+    ]
+
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+        findings = []
+
+        # Check for DPoP or mTLS token binding
+        has_dpop = self._has_dpop_enabled(client)
+        has_mtls_binding = self._has_mtls_token_binding(client)
+
+        if not has_dpop and not has_mtls_binding:
+            findings.append(
+                self.create_finding(
+                    title=f"Bearer tokens not sender-constrained for client '{client.clientId}'",
+                    description=(
+                        f"Client '{client.clientId}' uses **bearer tokens without sender-constraining**, "
+                        f"making stolen tokens fully reusable by attackers.\n\n"
+                        f"**What Are Bearer Tokens?**\n"
+                        f"Bearer tokens are like \"keys\" that grant access to resources. Whoever "
+                        f"possesses the token can use it (\"bearer\" = holder). This makes them "
+                        f"vulnerable if stolen.\n\n"
+                        f"**What Is Sender-Constraining?**\n"
+                        f"Sender-constraining binds tokens to the client that obtained them, "
+                        f"making stolen tokens useless to attackers. Two methods:\n\n"
+                        f"1. **DPoP (Demonstrating Proof-of-Possession, RFC 9449):**\n"
+                        f"   - Client generates key pair\n"
+                        f"   - Token bound to client's public key\n"
+                        f"   - Client must prove possession of private key with each request\n"
+                        f"   - Stolen tokens can't be used without private key\n\n"
+                        f"2. **mTLS Certificate-Bound Tokens (RFC 8705):**\n"
+                        f"   - Token bound to client's TLS certificate\n"
+                        f"   - Client must present same certificate for each request\n"
+                        f"   - Stolen tokens can't be used without certificate\n\n"
+                        f"**Security Impact Without Sender-Constraining:**\n\n"
+                        f"**Attack Scenario: Token Theft**\n"
+                        f"1. Attacker steals access token via:\n"
+                        f"   - Network interception (compromised TLS)\n"
+                        f"   - Database breach (token storage)\n"
+                        f"   - Log file exposure\n"
+                        f"   - Memory dump\n"
+                        f"   - XSS attack\n"
+                        f"2. Attacker uses stolen token immediately\n"
+                        f"3. No proof of possession required\n"
+                        f"4. **Full access until token expires**\n\n"
+                        f"**Real-World Breach:**\n"
+                        f"**Cloudflare via Okta (November 2023):**\n"
+                        f"- Attacker stole bearer access token from Okta\n"
+                        f"- Token not sender-constrained, fully reusable\n"
+                        f"- Token not rotated after compromise\n"
+                        f"- Attacker maintained persistent access to Cloudflare systems\n"
+                        f"- Breach: Internal wikis, bug database, source code repositories\n\n"
+                        f"**GitHub Personal Access Token Theft (December 2022):**\n"
+                        f"- Stolen bearer PATs bypassed 2FA\n"
+                        f"- No binding to originating device\n"
+                        f"- Attackers accessed private repositories\n\n"
+                        f"**RFC 9700 Recommendation:**\n"
+                        f"\"Authorization servers SHOULD use mechanisms for sender-constraining "
+                        f"access tokens to mitigate the risk of token theft and replay.\"\n\n"
+                        f"**Current Configuration:**\n"
+                        f"- DPoP Enabled: No\n"
+                        f"- mTLS Token Binding: No\n"
+                        f"- **Result:** Tokens are \"golden tickets\" - steal once, use anywhere"
+                    ),
+                    remediation=(
+                        f"Implement sender-constrained tokens for client '{client.clientId}':\n\n"
+                        f"**Option 1: DPoP (Recommended for Most Cases)**\n\n"
+                        f"DPoP is easier to implement and doesn't require certificate infrastructure.\n\n"
+                        f"**Step 1: Enable DPoP in Keycloak**\n"
+                        f"1. Log into Keycloak Admin Console\n"
+                        f"2. Navigate to: Clients → '{client.clientId}'\n"
+                        f"3. Go to: Advanced tab\n"
+                        f"4. Look for: OAuth 2.0 DPoP Bound Access Tokens\n"
+                        f"5. Enable: 'DPoP Required' or 'DPoP Optional'\n"
+                        f"6. Click 'Save'\n\n"
+                        f"**Step 2: Client Implementation - Generate Key Pair**\n"
+                        f"```javascript\n"
+                        f"// Generate key pair (do this once, store private key securely)\n"
+                        f"const keyPair = await crypto.subtle.generateKey(\n"
+                        f"  {{\n"
+                        f"    name: 'RSASSA-PKCS1-v1_5',\n"
+                        f"    modulusLength: 2048,\n"
+                        f"    publicExponent: new Uint8Array([1, 0, 1]),\n"
+                        f"    hash: 'SHA-256',\n"
+                        f"  }},\n"
+                        f"  true,\n"
+                        f"  ['sign', 'verify']\n"
+                        f");\n"
+                        f"```\n\n"
+                        f"**Step 3: Create DPoP Proof for Token Request**\n"
+                        f"```javascript\n"
+                        f"const dpopProof = await createDPoPProof({{\n"
+                        f"  keyPair,\n"
+                        f"  htm: 'POST',  // HTTP method\n"
+                        f"  htu: 'https://keycloak.example.com/realms/{realm.realm}/protocol/openid-connect/token',\n"
+                        f"  jti: crypto.randomUUID(),  // Unique request ID\n"
+                        f"}});\n\n"
+                        f"// Token request with DPoP\n"
+                        f"const response = await fetch('/token', {{\n"
+                        f"  method: 'POST',\n"
+                        f"  headers: {{\n"
+                        f"    'DPoP': dpopProof,\n"
+                        f"    'Content-Type': 'application/x-www-form-urlencoded',\n"
+                        f"  }},\n"
+                        f"  body: new URLSearchParams({{\n"
+                        f"    grant_type: 'authorization_code',\n"
+                        f"    code: authCode,\n"
+                        f"    redirect_uri: redirectUri,\n"
+                        f"  }})\n"
+                        f"}});\n"
+                        f"```\n\n"
+                        f"**Step 4: Use DPoP Proof with Access Token**\n"
+                        f"```javascript\n"
+                        f"// Create DPoP proof for API request\n"
+                        f"const apiDPoPProof = await createDPoPProof({{\n"
+                        f"  keyPair,\n"
+                        f"  htm: 'GET',\n"
+                        f"  htu: 'https://api.example.com/user/profile',\n"
+                        f"  ath: sha256Hash(accessToken),  // Hash of access token\n"
+                        f"  jti: crypto.randomUUID(),\n"
+                        f"}});\n\n"
+                        f"// API request with DPoP-bound token\n"
+                        f"const apiResponse = await fetch('https://api.example.com/user/profile', {{\n"
+                        f"  headers: {{\n"
+                        f"    'Authorization': `DPoP ${{accessToken}}`,  // Note: 'DPoP' not 'Bearer'\n"
+                        f"    'DPoP': apiDPoPProof,\n"
+                        f"  }}\n"
+                        f"}});\n"
+                        f"```\n\n"
+                        f"**Option 2: mTLS Certificate-Bound Tokens**\n\n"
+                        f"Suitable for enterprise environments with PKI infrastructure.\n\n"
+                        f"1. Enable mTLS in Keycloak (Realm Settings → Tokens → Certificate-Bound Tokens)\n"
+                        f"2. Configure client certificate validation\n"
+                        f"3. Clients present X.509 certificate with each request\n"
+                        f"4. Tokens bound to certificate thumbprint\n\n"
+                        f"**Benefits:**\n"
+                        f"- ✅ Stolen tokens can't be used without private key/certificate\n"
+                        f"- ✅ Prevents token replay attacks\n"
+                        f"- ✅ Mitigates impact of token leakage\n"
+                        f"- ✅ Required for FAPI 2.0 compliance\n\n"
+                        f"**Testing:**\n"
+                        f"1. Obtain access token with DPoP/mTLS\n"
+                        f"2. Try using token WITHOUT proof → Should fail\n"
+                        f"3. Try using token WITH correct proof → Should succeed\n"
+                        f"4. Try using token with DIFFERENT key → Should fail\n\n"
+                        f"**Libraries:**\n"
+                        f"- JavaScript: `dpop` npm package\n"
+                        f"- Python: `authlib` with DPoP support\n"
+                        f"- Java: `nimbus-jose-jwt` library"
+                    ),
+                    realm=realm,
+                    client=client,
+                    evidence={
+                        "client_id": client.clientId,
+                        "dpop_enabled": has_dpop,
+                        "mtls_token_binding": has_mtls_binding,
+                        "sender_constrained": False,
+                    },
+                )
+            )
+
+        return findings
+
+    def _has_dpop_enabled(self, client: ClientConfig) -> bool:
+        """Check if DPoP (Demonstrating Proof-of-Possession) is enabled."""
+        # Keycloak stores DPoP config in attributes
+        dpop_bound = client.attributes.get("dpop.bound.access.tokens", "").lower()
+        return dpop_bound in ["true", "required"]
+
+    def _has_mtls_token_binding(self, client: ClientConfig) -> bool:
+        """Check if mTLS certificate-bound tokens are enabled."""
+        # Keycloak stores mTLS token binding in attributes
+        mtls_binding = client.attributes.get("tls.client.certificate.bound.access.tokens", "").lower()
+        return mtls_binding == "true"

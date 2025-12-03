@@ -1,0 +1,95 @@
+name: Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache pip packages
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -e ".[dev]"
+
+    - name: Run linter (ruff)
+      run: |
+        ruff check src/
+
+    - name: Run type checker (mypy)
+      run: |
+        mypy src/keycloak_analyzer/
+      continue-on-error: true  # Don't fail build on mypy errors for now
+
+    - name: Run formatter check (black)
+      run: |
+        black --check src/ tests/
+      continue-on-error: true  # Don't fail build on formatting for now
+
+    - name: Run pytest
+      run: |
+        # Run pytest if test files exist, otherwise skip
+        if find tests/ -name "test_*.py" -type f | grep -q .; then
+          pytest tests/ -v --cov=keycloak_analyzer --cov-report=xml --cov-report=term
+        else
+          echo "No test files found yet. Skipping pytest."
+        fi
+
+    - name: Run analyzer on test fixtures (smoke test)
+      run: |
+        python -m keycloak_analyzer.cli tests/fixtures/ --format json --output /tmp/test-output.json
+        # Verify the analyzer ran successfully and found expected number of checks
+        if grep -q '"total_checks": 24' /tmp/test-output.json; then
+          echo "✓ Analyzer successfully initialized with 24 checks"
+        else
+          echo "✗ Expected 24 checks, check analyzer initialization"
+          exit 1
+        fi
+        # Verify findings were generated
+        if grep -q '"findings":' /tmp/test-output.json; then
+          echo "✓ Analyzer successfully generated findings"
+        else
+          echo "✗ No findings generated"
+          exit 1
+        fi
+
+    - name: Upload coverage to Codecov
+      if: matrix.python-version == '3.11'
+      uses: codecov/codecov-action@v4
+      with:
+        file: ./coverage.xml
+        fail_ci_if_error: false  # Don't fail if Codecov upload fails
+        token: ${{ secrets.CODECOV_TOKEN }}
+      continue-on-error: true
+
+    - name: Archive test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-${{ matrix.python-version }}
+        path: |
+          /tmp/test-output.json
+          htmlcov/
+        retention-days: 7

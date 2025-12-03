@@ -6,7 +6,7 @@ from RFC 9700.
 """
 
 __version__ = "0.1.0"
-__author__ = "Keycloak Security Team"
+__author__ = "Kristoffer Opsahl"
 __license__ = "MIT"
 
 from .core import RealmDiscovery, RealmLoader, SecurityAnalyzer, AnalysisResult

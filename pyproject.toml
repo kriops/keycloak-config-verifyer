@@ -6,10 +6,16 @@ build-backend = "setuptools.build_meta"
 name = "keycloak-analyzer"
 version = "0.1.0"
 description = "Static security analysis tool for Keycloak realm configurations"
-authors = [{name = "Keycloak Security Team", email = "security@example.com"}]
+authors = [{name = "Kristoffer Opsahl", email = "hello@kristofferopsahl.com"}]
 readme = "README.md"
 requires-python = ">=3.9"
 license = {text = "MIT"}
+
+[project.urls]
+Homepage = "https://github.com/kriops/met-keycloak-config-verifyer"
+Repository = "https://github.com/kriops/met-keycloak-config-verifyer"
+Issues = "https://github.com/kriops/met-keycloak-config-verifyer/issues"
+Documentation = "https://github.com/kriops/met-keycloak-config-verifyer/blob/main/README.md"
 
 dependencies = [
     "pydantic>=2.5.0",

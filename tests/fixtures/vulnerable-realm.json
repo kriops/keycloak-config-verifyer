@@ -1,0 +1,140 @@
+{
+  "id": "vulnerable-realm-id",
+  "realm": "vulnerable-realm",
+  "displayName": "Vulnerable Realm (Multiple Security Issues)",
+  "enabled": true,
+  "sslRequired": "none",
+  "bruteForceProtected": false,
+  "accessTokenLifespan": 3600,
+  "accessTokenLifespanForImplicitFlow": 7200,
+  "ssoSessionIdleTimeout": 86400,
+  "ssoSessionMaxLifespan": 604800,
+  "offlineSessionIdleTimeout": 7776000,
+  "refreshTokenMaxReuse": 5,
+  "clients": [
+    {
+      "id": "insecure-spa-id",
+      "clientId": "insecure-spa",
+      "name": "Insecure SPA",
+      "description": "Public client without PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://*.example.com/*",
+        "http://app.example.com/callback"
+      ],
+      "webOrigins": [
+        "*"
+      ],
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "weak-pkce-client-id",
+      "clientId": "weak-pkce-client",
+      "name": "Weak PKCE Client",
+      "description": "Public client with PKCE plain method",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "plain"
+      },
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "weak-confidential-id",
+      "clientId": "weak-confidential",
+      "name": "Weak Confidential Client",
+      "description": "Confidential client without authentication",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://backend.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://backend.example.com"
+      ],
+      "clientAuthenticatorType": null,
+      "secret": null,
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "symmetric-auth-id",
+      "clientId": "symmetric-auth-client",
+      "name": "Symmetric Auth Client",
+      "description": "Confidential client with client secret",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://api.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://api.example.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "super-secret-value-in-export",
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "legacy-client-id",
+      "clientId": "legacy-app",
+      "name": "Legacy Application",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://192.168.1.100/callback",
+        ""
+      ],
+      "webOrigins": [
+        "+"
+      ],
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

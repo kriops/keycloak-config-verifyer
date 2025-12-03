@@ -1,0 +1,95 @@
+{
+  "id": "secure-realm-id",
+  "realm": "secure-realm",
+  "displayName": "Secure Realm (Best Practices)",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "accessTokenLifespanForImplicitFlow": 900,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "refreshTokenMaxReuse": 0,
+  "clients": [
+    {
+      "id": "spa-client-id",
+      "clientId": "spa-app",
+      "name": "Single Page Application",
+      "description": "Modern SPA with PKCE S256",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://app.example.com/callback",
+        "https://app.example.com/silent-renew"
+      ],
+      "webOrigins": [
+        "https://app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "backend-client-id",
+      "clientId": "backend-service",
+      "name": "Backend Service",
+      "description": "Confidential client with PKCE and asymmetric auth",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://backend.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://backend.example.com"
+      ],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "mobile-client-id",
+      "clientId": "mobile-app",
+      "name": "Mobile Application",
+      "description": "Native mobile app with PKCE and custom scheme",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.example.app://callback",
+        "http://localhost/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

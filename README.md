@@ -33,8 +33,8 @@ This tool scans Keycloak realm export files (JSON) and identifies security misco
 
 ```bash
 # Clone the repository
-git clone https://github.com/kriops/met-keycloak-config-verifyer.git
-cd met-keycloak-config-verifyer
+git clone https://github.com/kriops/keycloak-config-verifyer.git
+cd keycloak-config-verifyer
 
 # Install with development dependencies
 pip install -e ".[dev]"

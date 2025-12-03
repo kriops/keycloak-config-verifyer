@@ -12,10 +12,10 @@ requires-python = ">=3.9"
 license = {text = "MIT"}
 
 [project.urls]
-Homepage = "https://github.com/kriops/met-keycloak-config-verifyer"
-Repository = "https://github.com/kriops/met-keycloak-config-verifyer"
-Issues = "https://github.com/kriops/met-keycloak-config-verifyer/issues"
-Documentation = "https://github.com/kriops/met-keycloak-config-verifyer/blob/main/README.md"
+Homepage = "https://github.com/kriops/keycloak-config-verifyer"
+Repository = "https://github.com/kriops/keycloak-config-verifyer"
+Issues = "https://github.com/kriops/keycloak-config-verifyer/issues"
+Documentation = "https://github.com/kriops/keycloak-config-verifyer/blob/main/README.md"
 
 dependencies = [
     "pydantic>=2.5.0",

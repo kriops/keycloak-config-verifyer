@@ -1,0 +1,214 @@
+{
+  "id": "redirect-issues-id",
+  "realm": "redirect-test-realm",
+  "displayName": "Redirect URI Issues Test Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "clients": [
+    {
+      "id": "wildcard-subdomain-id",
+      "clientId": "wildcard-subdomain-client",
+      "name": "Wildcard Subdomain Client",
+      "description": "Client with wildcard subdomain redirect URIs",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://*.example.com/callback",
+        "https://app.example.com/*"
+      ],
+      "webOrigins": [
+        "https://*.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "http-redirect-id",
+      "clientId": "http-redirect-client",
+      "name": "HTTP Redirect Client",
+      "description": "Client with insecure HTTP redirect URIs",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://webapp.example.com/callback",
+        "https://secure.example.com/callback"
+      ],
+      "webOrigins": [
+        "http://webapp.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "ip-address-redirect-id",
+      "clientId": "ip-address-client",
+      "name": "IP Address Redirect Client",
+      "description": "Client with IP address in redirect URIs",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://192.168.1.100/callback",
+        "http://10.0.0.50:8080/auth/callback"
+      ],
+      "webOrigins": [
+        "https://192.168.1.100"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "empty-redirect-id",
+      "clientId": "empty-redirect-client",
+      "name": "Empty Redirect Client",
+      "description": "Client with empty or missing redirect URIs",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "",
+        "https://app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "wildcard-weborigins-id",
+      "clientId": "wildcard-weborigins-client",
+      "name": "Wildcard Web Origins Client",
+      "description": "Client with wildcard web origins",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://app.example.com/callback"
+      ],
+      "webOrigins": [
+        "*",
+        "+"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "localhost-dev-id",
+      "clientId": "localhost-dev-client",
+      "name": "Localhost Development Client",
+      "description": "Client with localhost URIs - acceptable for development",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/callback",
+        "http://127.0.0.1:3000/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "custom-scheme-id",
+      "clientId": "custom-scheme-client",
+      "name": "Custom Scheme Mobile Client",
+      "description": "Mobile client with custom URI scheme",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.example.mobileapp://oauth/callback",
+        "myapp://callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "secure-exact-match-id",
+      "clientId": "secure-exact-match-client",
+      "name": "Secure Exact Match Client",
+      "description": "Properly configured client with exact HTTPS URIs",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://secure-app.example.com/auth/callback",
+        "https://secure-app.example.com/auth/silent-callback"
+      ],
+      "webOrigins": [
+        "https://secure-app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

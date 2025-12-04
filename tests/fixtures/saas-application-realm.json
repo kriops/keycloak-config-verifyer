@@ -1,0 +1,223 @@
+{
+  "id": "saas-app-realm-id",
+  "realm": "saas-platform",
+  "displayName": "SaaS Platform Multi-Tenant Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 600,
+  "accessTokenLifespanForImplicitFlow": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 43200,
+  "offlineSessionIdleTimeout": 2592000,
+  "refreshTokenMaxReuse": 0,
+  "clients": [
+    {
+      "id": "saas-web-app-id",
+      "clientId": "saas-web-app",
+      "name": "SaaS Web Application",
+      "description": "Main SaaS platform web application",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://app.saasplatform.com/auth/callback",
+        "https://app.saasplatform.com/auth/silent-refresh",
+        "https://*.saasplatform.com/auth/callback"
+      ],
+      "webOrigins": [
+        "https://app.saasplatform.com",
+        "https://*.saasplatform.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "saas-mobile-ios-id",
+      "clientId": "saas-mobile-ios",
+      "name": "SaaS Mobile App (iOS)",
+      "description": "Native iOS application",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.saasplatform.ios://oauth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "client.offline.session.idle.timeout": "2592000"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "saas-mobile-android-id",
+      "clientId": "saas-mobile-android",
+      "name": "SaaS Mobile App (Android)",
+      "description": "Native Android application",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.saasplatform.android://oauth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "client.offline.session.idle.timeout": "2592000"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "api-gateway-id",
+      "clientId": "api-gateway",
+      "name": "API Gateway",
+      "description": "Central API gateway service",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-gateway-secret-abc",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "webhook-service-id",
+      "clientId": "webhook-service",
+      "name": "Webhook Notification Service",
+      "description": "Service account for webhook notifications",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "webhook-service-secret",
+      "attributes": {
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "third-party-integration-id",
+      "clientId": "zapier-integration",
+      "name": "Zapier Integration",
+      "description": "Third-party Zapier integration",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://zapier.com/dashboard/auth/oauth/return/SaaSPlatformAPI/"
+      ],
+      "webOrigins": [
+        "https://zapier.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "zapier-integration-secret",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": true
+    },
+    {
+      "id": "public-api-client-id",
+      "clientId": "public-api-client",
+      "name": "Public API Client",
+      "description": "Public API for developer integrations",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://developers.saasplatform.com/oauth/callback"
+      ],
+      "webOrigins": [
+        "https://developers.saasplatform.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "public-api-secret-def",
+      "attributes": {
+        "access.token.lifespan": "3600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": true
+    },
+    {
+      "id": "admin-dashboard-id",
+      "clientId": "admin-dashboard",
+      "name": "Admin Dashboard",
+      "description": "Internal administration dashboard",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://admin.saasplatform.com/callback"
+      ],
+      "webOrigins": [
+        "https://admin.saasplatform.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [
+      {"name": "user", "description": "Standard user role"},
+      {"name": "premium_user", "description": "Premium subscription user"},
+      {"name": "admin", "description": "Platform administrator"},
+      {"name": "api_user", "description": "API access user"}
+    ],
+    "client": {}
+  }
+}

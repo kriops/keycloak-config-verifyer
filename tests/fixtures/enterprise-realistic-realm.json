@@ -1,0 +1,217 @@
+{
+  "id": "enterprise-realm-id",
+  "realm": "enterprise-corp",
+  "displayName": "Enterprise Corporation Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 900,
+  "accessTokenLifespanForImplicitFlow": 300,
+  "ssoSessionIdleTimeout": 3600,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "refreshTokenMaxReuse": 0,
+  "clients": [
+    {
+      "id": "employee-portal-web-id",
+      "clientId": "employee-portal-web",
+      "name": "Employee Portal (Web)",
+      "description": "Internal employee portal web application",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://portal.enterprise-corp.com/auth/callback",
+        "https://portal.enterprise-corp.com/auth/silent-refresh"
+      ],
+      "webOrigins": [
+        "https://portal.enterprise-corp.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "900"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "employee-portal-mobile-id",
+      "clientId": "employee-portal-mobile",
+      "name": "Employee Portal (Mobile)",
+      "description": "Native mobile app for employees",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.enterprise.portal://oauth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "client.offline.session.idle.timeout": "2592000"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "hr-system-backend-id",
+      "clientId": "hr-system-backend",
+      "name": "HR System Backend",
+      "description": "Backend service for HR management system",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "hr-backend-secret-xyz",
+      "attributes": {
+        "access.token.lifespan": "600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "legacy-erp-system-id",
+      "clientId": "legacy-erp-system",
+      "name": "Legacy ERP System",
+      "description": "Older ERP system with some security compromises",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://erp-legacy.enterprise-corp.com/auth"
+      ],
+      "webOrigins": [
+        "https://erp-legacy.enterprise-corp.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "erp-legacy-secret",
+      "attributes": {
+        "access.token.lifespan": "3600"
+      },
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "admin-cli-id",
+      "clientId": "admin-cli",
+      "name": "Keycloak Admin CLI",
+      "description": "CLI tool for Keycloak administration",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "reporting-api-id",
+      "clientId": "reporting-api",
+      "name": "Reporting API",
+      "description": "Bearer-only API for reporting services",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "reporting-api-secret",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "partner-integration-id",
+      "clientId": "partner-integration",
+      "name": "Partner Integration Service",
+      "description": "External partner API integration with JWT auth",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://partners.enterprise-corp.com/callback"
+      ],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://partners.enterprise-corp.com/.well-known/jwks.json",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": true
+    },
+    {
+      "id": "dev-portal-staging-id",
+      "clientId": "employee-portal-dev",
+      "name": "Employee Portal (Development)",
+      "description": "Development instance of employee portal",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:3000/callback",
+        "https://dev.portal.enterprise-corp.com/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:3000",
+        "https://dev.portal.enterprise-corp.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [
+      {"name": "employee", "description": "Standard employee role"},
+      {"name": "manager", "description": "Manager role with elevated permissions"},
+      {"name": "hr_admin", "description": "HR administrator role"},
+      {"name": "it_admin", "description": "IT administrator role"}
+    ],
+    "client": {}
+  }
+}

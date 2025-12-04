@@ -1,0 +1,277 @@
+{
+  "id": "microservices-realm-id",
+  "realm": "cloud-platform",
+  "displayName": "Cloud Platform Microservices Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "ssoSessionMaxLifespan": 36000,
+  "offlineSessionIdleTimeout": 2592000,
+  "refreshTokenMaxReuse": 0,
+  "clients": [
+    {
+      "id": "frontend-spa-id",
+      "clientId": "frontend-spa",
+      "name": "Frontend SPA",
+      "description": "Single-page application frontend",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://app.cloudplatform.io/auth/callback",
+        "https://app.cloudplatform.io/auth/silent-refresh"
+      ],
+      "webOrigins": [
+        "https://app.cloudplatform.io"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "user-service-id",
+      "clientId": "user-service",
+      "name": "User Management Service",
+      "description": "Microservice handling user operations",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://user-service.internal/.well-known/jwks.json",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "order-service-id",
+      "clientId": "order-service",
+      "name": "Order Processing Service",
+      "description": "Microservice for order processing",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://order-service.internal/.well-known/jwks.json",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "payment-service-id",
+      "clientId": "payment-service",
+      "name": "Payment Processing Service",
+      "description": "Sensitive payment processing microservice",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://payment-service.internal/.well-known/jwks.json",
+        "access.token.lifespan": "180"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "notification-service-id",
+      "clientId": "notification-service",
+      "name": "Notification Service",
+      "description": "Email and SMS notification service",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "notification-secret-xyz",
+      "attributes": {
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "analytics-service-id",
+      "clientId": "analytics-service",
+      "name": "Analytics Service",
+      "description": "Data analytics and reporting service",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "analytics-secret-abc",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "api-gateway-id",
+      "clientId": "api-gateway",
+      "name": "API Gateway",
+      "description": "Central API gateway for all services",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-gateway-secret-def",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "admin-api-id",
+      "clientId": "admin-api",
+      "name": "Admin API",
+      "description": "Administrative API for internal tools",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://admin.cloudplatform.io/callback"
+      ],
+      "webOrigins": [
+        "https://admin.cloudplatform.io"
+      ],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://admin.cloudplatform.io/.well-known/jwks.json",
+        "access.token.lifespan": "600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "legacy-monolith-id",
+      "clientId": "legacy-monolith",
+      "name": "Legacy Monolith Application",
+      "description": "Old monolithic application being phased out",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://legacy.cloudplatform.io/auth/callback"
+      ],
+      "webOrigins": [
+        "https://legacy.cloudplatform.io"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "legacy-secret-old",
+      "attributes": {
+        "access.token.lifespan": "1800"
+      },
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "batch-processor-id",
+      "clientId": "batch-processor",
+      "name": "Batch Processing Service",
+      "description": "Service for background batch jobs",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "batch-processor-secret",
+      "attributes": {
+        "access.token.lifespan": "600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [
+      {"name": "user", "description": "Standard user role"},
+      {"name": "service", "description": "Service account role"},
+      {"name": "admin", "description": "Administrator role"}
+    ],
+    "client": {
+      "user-service": [
+        {"name": "user.read", "description": "Read user data"},
+        {"name": "user.write", "description": "Write user data"}
+      ],
+      "order-service": [
+        {"name": "order.read", "description": "Read orders"},
+        {"name": "order.write", "description": "Create/update orders"}
+      ],
+      "payment-service": [
+        {"name": "payment.process", "description": "Process payments"}
+      ]
+    }
+  }
+}

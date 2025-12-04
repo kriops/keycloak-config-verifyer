@@ -1,0 +1,186 @@
+{
+  "id": "flow-violations-id",
+  "realm": "flow-test-realm",
+  "displayName": "OAuth Flow Violations Test Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "clients": [
+    {
+      "id": "implicit-flow-spa-id",
+      "clientId": "implicit-flow-spa",
+      "name": "Implicit Flow SPA",
+      "description": "Legacy SPA using deprecated implicit grant flow",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://legacy-spa.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://legacy-spa.example.com"
+      ],
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "password-grant-native-id",
+      "clientId": "password-grant-native",
+      "name": "Password Grant Native App",
+      "description": "Native application using deprecated password grant",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "nativeapp://callback"
+      ],
+      "webOrigins": [],
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "all-flows-enabled-id",
+      "clientId": "all-flows-enabled",
+      "name": "All Flows Enabled Client",
+      "description": "Insecure client with all flows enabled",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://insecure-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://insecure-app.example.com"
+      ],
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "implicit-hybrid-id",
+      "clientId": "implicit-hybrid-client",
+      "name": "Implicit Hybrid Flow Client",
+      "description": "Client mixing implicit and authorization code flows",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://hybrid-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://hybrid-app.example.com"
+      ],
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "service-account-no-auth-id",
+      "clientId": "service-account-no-auth",
+      "name": "Service Account Without Authentication",
+      "description": "Service account client without proper authentication",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": null,
+      "secret": null,
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "bearer-only-with-flows-id",
+      "clientId": "bearer-only-with-flows",
+      "name": "Bearer Only with Flows Enabled",
+      "description": "Bearer-only client with flows incorrectly enabled",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "bearer-secret-123",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "secure-authz-code-id",
+      "clientId": "secure-authz-code-client",
+      "name": "Secure Authorization Code Client",
+      "description": "Properly configured with only authorization code flow and PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://secure-modern-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://secure-modern-app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "cli-tool-password-grant-id",
+      "clientId": "cli-tool-password-grant",
+      "name": "CLI Tool with Password Grant",
+      "description": "Command-line tool using password grant (common but insecure)",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "attributes": {},
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

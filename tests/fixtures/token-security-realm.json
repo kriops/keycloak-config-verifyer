@@ -1,0 +1,174 @@
+{
+  "id": "token-security-id",
+  "realm": "token-security-realm",
+  "displayName": "Token Security Issues Test Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 7200,
+  "accessTokenLifespanForImplicitFlow": 14400,
+  "ssoSessionIdleTimeout": 172800,
+  "ssoSessionMaxLifespan": 2592000,
+  "offlineSessionIdleTimeout": 15552000,
+  "refreshTokenMaxReuse": 10,
+  "clients": [
+    {
+      "id": "long-lived-tokens-id",
+      "clientId": "long-lived-tokens-client",
+      "name": "Long-Lived Tokens Client",
+      "description": "Client with excessively long token lifespans",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://app.example.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "long-lived-secret",
+      "attributes": {
+        "access.token.lifespan": "86400",
+        "client.session.idle.timeout": "259200",
+        "client.session.max.lifespan": "2592000"
+      },
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "no-rotation-refresh-id",
+      "clientId": "no-rotation-refresh-client",
+      "name": "No Refresh Token Rotation Client",
+      "description": "Client without refresh token rotation enabled",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://mobile-app.example.com/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "client.offline.session.idle.timeout": "7776000",
+        "client.offline.session.max.lifespan": "31536000"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "full-scope-enabled-id",
+      "clientId": "full-scope-enabled-client",
+      "name": "Full Scope Allowed Client",
+      "description": "Client with full scope allowed - grants all permissions",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://webapp.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://webapp.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "short-implicit-token-id",
+      "clientId": "short-implicit-token-client",
+      "name": "Short Implicit Token Lifespan",
+      "description": "Implicit flow with short token lifespan (still insecure)",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://implicit-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://implicit-app.example.com"
+      ],
+      "attributes": {
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "secure-tokens-id",
+      "clientId": "secure-tokens-client",
+      "name": "Secure Token Configuration Client",
+      "description": "Properly configured with short-lived tokens and rotation",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://secure-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://secure-app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "300",
+        "use.refresh.tokens": "true",
+        "client.session.idle.timeout": "1800",
+        "client.session.max.lifespan": "36000"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "api-backend-tokens-id",
+      "clientId": "api-backend-tokens-client",
+      "name": "API Backend with Service Account",
+      "description": "Backend service with appropriate token configuration",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "api-backend-secret-456",
+      "attributes": {
+        "access.token.lifespan": "600"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

@@ -1,0 +1,186 @@
+{
+  "id": "client-auth-id",
+  "realm": "client-auth-realm",
+  "displayName": "Client Authentication Issues Test Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "clients": [
+    {
+      "id": "confidential-no-auth-id",
+      "clientId": "confidential-no-auth-client",
+      "name": "Confidential Client Without Authentication",
+      "description": "Confidential client missing authentication mechanism",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://backend.example.com/callback"
+      ],
+      "webOrigins": [],
+      "clientAuthenticatorType": null,
+      "secret": null,
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "symmetric-secret-id",
+      "clientId": "symmetric-secret-client",
+      "name": "Symmetric Secret Client",
+      "description": "Client using client secret (symmetric) instead of asymmetric",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://webapp.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://webapp.example.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "my-client-secret-value-123",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "secret-in-export-id",
+      "clientId": "secret-in-export-client",
+      "name": "Secret Exposed in Export",
+      "description": "Client with secret present in realm export",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://service.example.com/oauth/callback"
+      ],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "exposed-secret-should-rotate",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "jwt-auth-client-id",
+      "clientId": "jwt-auth-client",
+      "name": "JWT Authentication Client",
+      "description": "Client using JWT for authentication (asymmetric)",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://secure-service.example.com/callback"
+      ],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://secure-service.example.com/.well-known/jwks.json"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "x509-auth-client-id",
+      "clientId": "x509-auth-client",
+      "name": "X.509 Certificate Auth Client",
+      "description": "Client using X.509 certificate authentication",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://cert-service.example.com/callback"
+      ],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-x509",
+      "attributes": {
+        "x509.allow.regex.pattern.comparison": "false",
+        "x509.subjectdn": "CN=cert-service.example.com"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "public-as-confidential-id",
+      "clientId": "public-as-confidential-client",
+      "name": "Public Client Marked as Confidential",
+      "description": "Client incorrectly marked as confidential but has no secret",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://misconfig-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://misconfig-app.example.com"
+      ],
+      "clientAuthenticatorType": null,
+      "secret": null,
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "missing-description-id",
+      "clientId": "missing-description-client",
+      "name": "Client Missing Description",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://nodocs.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://nodocs.example.com"
+      ],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "secret-789",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

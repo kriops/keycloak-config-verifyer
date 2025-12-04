@@ -1,0 +1,192 @@
+{
+  "id": "mobile-app-realm-id",
+  "realm": "mobile-banking",
+  "displayName": "Mobile Banking Application Realm",
+  "enabled": true,
+  "sslRequired": "all",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 900,
+  "ssoSessionMaxLifespan": 3600,
+  "offlineSessionIdleTimeout": 2592000,
+  "refreshTokenMaxReuse": 0,
+  "clients": [
+    {
+      "id": "banking-app-ios-id",
+      "clientId": "banking-app-ios",
+      "name": "Banking App (iOS)",
+      "description": "Native iOS banking application with PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.bank.mobileapp://oauth/callback",
+        "com.bank.mobileapp://oauth/logout"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "client.offline.session.idle.timeout": "2592000",
+        "client.offline.session.max.lifespan": "5184000",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "banking-app-android-id",
+      "clientId": "banking-app-android",
+      "name": "Banking App (Android)",
+      "description": "Native Android banking application with PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.bank.android://oauth/callback",
+        "com.bank.android://oauth/logout"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "use.refresh.tokens": "true",
+        "client.offline.session.idle.timeout": "2592000",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "legacy-mobile-app-id",
+      "clientId": "legacy-banking-app",
+      "name": "Legacy Banking App",
+      "description": "Older mobile app without PKCE (security issue)",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.bank.legacy://callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "access.token.lifespan": "1800"
+      },
+      "fullScopeAllowed": true,
+      "consentRequired": false
+    },
+    {
+      "id": "mobile-web-view-id",
+      "clientId": "mobile-web-view",
+      "name": "Mobile Web View",
+      "description": "Embedded web view in mobile app",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://mobile.bank.com/webview/callback"
+      ],
+      "webOrigins": [
+        "https://mobile.bank.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "push-notification-service-id",
+      "clientId": "push-notification-service",
+      "name": "Push Notification Service",
+      "description": "Backend service for push notifications",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-jwt",
+      "attributes": {
+        "use.jwks.url": "true",
+        "jwks.url": "https://push-service.bank.com/.well-known/jwks.json",
+        "access.token.lifespan": "300"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "biometric-auth-service-id",
+      "clientId": "biometric-auth-service",
+      "name": "Biometric Authentication Service",
+      "description": "Service for biometric authentication processing",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "biometric-service-secret",
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "tablet-pos-app-id",
+      "clientId": "tablet-pos-app",
+      "name": "Tablet POS Application",
+      "description": "Point-of-sale tablet application for branches",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "com.bank.pos://oauth/callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "access.token.lifespan": "1800"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [
+      {"name": "customer", "description": "Standard customer role"},
+      {"name": "premium_customer", "description": "Premium banking customer"},
+      {"name": "teller", "description": "Bank teller role"},
+      {"name": "branch_manager", "description": "Branch manager role"}
+    ],
+    "client": {}
+  }
+}

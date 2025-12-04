@@ -1,0 +1,134 @@
+{
+  "id": "pkce-violations-id",
+  "realm": "pkce-test-realm",
+  "displayName": "PKCE Violations Test Realm",
+  "enabled": true,
+  "sslRequired": "external",
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "clients": [
+    {
+      "id": "public-no-pkce-id",
+      "clientId": "public-spa-no-pkce",
+      "name": "Public SPA Without PKCE",
+      "description": "Public client with no PKCE enforcement - critical vulnerability",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://spa.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://spa.example.com"
+      ],
+      "attributes": {},
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "public-plain-pkce-id",
+      "clientId": "public-app-plain-pkce",
+      "name": "Public App with Plain PKCE",
+      "description": "Public client using deprecated plain PKCE method",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "myapp://callback"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "plain"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "public-optional-pkce-id",
+      "clientId": "public-app-optional-pkce",
+      "name": "Public App with Optional PKCE",
+      "description": "Public client where PKCE is optional not required",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://mobile-app.example.com/auth/callback"
+      ],
+      "webOrigins": [
+        "https://mobile-app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "public-secure-pkce-id",
+      "clientId": "public-app-secure-pkce",
+      "name": "Public App with Secure PKCE",
+      "description": "Properly configured public client with required S256 PKCE",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://secure-app.example.com/callback"
+      ],
+      "webOrigins": [
+        "https://secure-app.example.com"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "oauth2.pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    },
+    {
+      "id": "confidential-with-pkce-id",
+      "clientId": "confidential-with-pkce",
+      "name": "Confidential Client with PKCE",
+      "description": "Confidential client unnecessarily using PKCE",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "redirectUris": [
+        "https://backend.example.com/oauth/callback"
+      ],
+      "webOrigins": [],
+      "clientAuthenticatorType": "client-secret",
+      "secret": "test-secret-12345",
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "fullScopeAllowed": false,
+      "consentRequired": false
+    }
+  ],
+  "attributes": {},
+  "roles": {
+    "realm": [],
+    "client": {}
+  }
+}

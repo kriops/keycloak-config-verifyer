@@ -155,6 +155,7 @@ Thumbs.db
 # Project specific
 *.Zone.Identifier
 .claude/
+excluded/
 
 # Keycloak Analyzer outputs
 reports/

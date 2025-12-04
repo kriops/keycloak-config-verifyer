@@ -78,13 +78,19 @@ class Reporter(ABC):
     """Base class for all report formatters."""
 
     @abstractmethod
-    def generate(self, findings: List[Finding], summary: ReportSummary) -> str:
+    def generate(
+        self,
+        findings: List[Finding],
+        summary: ReportSummary,
+        group_by: str = "severity",
+    ) -> str:
         """
         Generate report content.
 
         Args:
             findings: List of Finding objects.
             summary: ReportSummary with statistics.
+            group_by: Grouping mode - "severity" (default), "realm", or "client".
 
         Returns:
             Report content as string.

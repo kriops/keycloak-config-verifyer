@@ -1,6 +1,6 @@
 """Console reporter with Rich formatting."""
 
-from typing import List
+from typing import List, Dict
 from rich.console import Console
 from rich.table import Table
 from rich.panel import Panel
@@ -18,7 +18,7 @@ class ConsoleReporter(Reporter):
         self.console = Console()
 
     def generate(
-        self, findings: List[Finding], summary: ReportSummary, group_by_realm: bool = False
+        self, findings: List[Finding], summary: ReportSummary, group_by: str = "severity"
     ) -> str:
         """
         Generate console output (prints directly, returns empty string).
@@ -26,27 +26,37 @@ class ConsoleReporter(Reporter):
         Args:
             findings: List of findings to report.
             summary: Summary statistics.
-            group_by_realm: If True, group findings by realm instead of severity.
+            group_by: Grouping mode - "severity" (default), "realm", or "client".
 
         Returns:
             Empty string (output is printed directly to console).
         """
+        from ..utils import group_by_severity, group_by_realm, group_by_client
+
         self._print_header()
         self._print_summary(summary)
 
-        if group_by_realm:
+        if group_by == "client":
+            # Hierarchical grouping: Realm → Client → Findings
+            grouped = group_by_client(findings)
+
+            if not grouped:
+                self.console.print("\n[yellow]ℹ️  No client-level findings to display.[/yellow]")
+                self.console.print("[dim]Use --group-by severity or --group-by realm to see realm-level findings.[/dim]\n")
+            else:
+                for realm_name in grouped:
+                    self._print_client_grouped_realm_section(realm_name, grouped[realm_name])
+
+        elif group_by == "realm":
             # Group by realm, then by severity within each realm
-            from collections import defaultdict
-
-            findings_by_realm = defaultdict(list)
-            for finding in findings:
-                findings_by_realm[finding.realm_name].append(finding)
-
-            for realm_name in sorted(findings_by_realm.keys()):
-                realm_findings = findings_by_realm[realm_name]
+            grouped = group_by_realm(findings)
+            for realm_name in grouped:
+                realm_findings = grouped[realm_name]
                 self._print_realm_section(realm_name, realm_findings)
-        else:
-            # Group findings by severity and print
+
+        else:  # group_by == "severity" (default)
+            # Group findings by severity
+            grouped = group_by_severity(findings)
             for severity in [
                 Severity.CRITICAL,
                 Severity.HIGH,
@@ -54,9 +64,8 @@ class ConsoleReporter(Reporter):
                 Severity.LOW,
                 Severity.INFO,
             ]:
-                severity_findings = [f for f in findings if f.severity == severity]
-                if severity_findings:
-                    self._print_severity_section(severity, severity_findings)
+                if severity in grouped:
+                    self._print_severity_section(severity, grouped[severity])
 
         self._print_footer(summary)
         return ""  # Console prints directly
@@ -204,6 +213,94 @@ class ConsoleReporter(Reporter):
                 )
 
         self.console.print()
+
+    def _print_client_grouped_realm_section(
+        self, realm_name: str, clients: Dict[str, List[Finding]]
+    ) -> None:
+        """Print a realm section with client grouping."""
+        total_findings = sum(len(findings) for findings in clients.values())
+
+        self.console.print(
+            f"\n[bold cyan]🏰 REALM: {realm_name} "
+            f"({len(clients)} clients, {total_findings} findings)[/bold cyan]"
+        )
+        self.console.print("═" * 80)
+
+        for client_id in clients:
+            client_findings = clients[client_id]
+            self._print_client_section(client_id, client_findings)
+
+    def _print_client_section(self, client_id: str, findings: List[Finding]) -> None:
+        """Print a section for a specific client."""
+        self.console.print(
+            f"\n  [bold magenta]🔧 CLIENT: {client_id} ({len(findings)} findings)[/bold magenta]"
+        )
+        self.console.print("  " + "─" * 78)
+
+        # Group findings within client by severity
+        for severity in [
+            Severity.CRITICAL,
+            Severity.HIGH,
+            Severity.MEDIUM,
+            Severity.LOW,
+            Severity.INFO,
+        ]:
+            severity_findings = [f for f in findings if f.severity == severity]
+            if severity_findings:
+                color = self.severity_color_code(severity)
+                icon = self._severity_icon(severity)
+                self.console.print(
+                    f"\n    [{color}]{icon} {severity.value} ({len(severity_findings)})[/{color}]"
+                )
+
+                for i, finding in enumerate(severity_findings, 1):
+                    self._print_finding_indented(finding, color, i, indent=4)
+
+    def _print_finding_indented(
+        self, finding: Finding, color: str, number: int, indent: int = 0
+    ) -> None:
+        """Print a single finding with custom indentation."""
+        indent_str = " " * indent
+
+        self.console.print(
+            f"\n{indent_str}[bold {color}]{number}. [{finding.check_id}] {finding.title}[/bold {color}]"
+        )
+
+        # Metadata
+        meta_parts = [f"Client: [cyan]{finding.client_id}[/cyan]"]
+        meta_parts.append(f"File: {finding.file_path}")
+        self.console.print(indent_str + "   " + " | ".join(meta_parts))
+
+        # Description
+        desc_lines = finding.description.split("\n")
+        if len(desc_lines) > 10:
+            for line in desc_lines[:8]:
+                if line.strip():
+                    self.console.print(f"{indent_str}   {line}")
+            self.console.print(f"{indent_str}   [dim]... ({len(desc_lines) - 8} more lines)[/dim]")
+        else:
+            for line in desc_lines:
+                if line.strip():
+                    self.console.print(f"{indent_str}   {line}")
+
+        # Remediation
+        self.console.print(f"\n{indent_str}   [bold]🔧 Remediation:[/bold]")
+        remediation_lines = finding.remediation.split("\n")
+        shown_lines = 0
+        for line in remediation_lines:
+            if line.strip() and shown_lines < 6:
+                self.console.print(f"{indent_str}   {line}")
+                shown_lines += 1
+            elif shown_lines >= 6:
+                self.console.print(f"{indent_str}   [dim]... (see full report for details)[/dim]")
+                break
+
+        # References
+        if finding.references:
+            refs = ", ".join(finding.references[:3])
+            if len(finding.references) > 3:
+                refs += f", +{len(finding.references) - 3} more"
+            self.console.print(f"\n{indent_str}   [dim]References: {refs}[/dim]")
 
     def _severity_icon(self, severity: Severity) -> str:
         """Get emoji icon for severity."""

@@ -48,10 +48,11 @@ logger = logging.getLogger(__name__)
     "--verbose", "-v", is_flag=True, help="Enable verbose logging"
 )
 @click.option(
-    "--group-by-realm",
+    "--group-by",
     "-g",
-    is_flag=True,
-    help="Group findings by realm in console output",
+    type=click.Choice(["severity", "realm", "client"], case_sensitive=False),
+    default="severity",
+    help="Group findings by severity (default), realm, or client",
 )
 def analyze(
     path: str,
@@ -61,7 +62,7 @@ def analyze(
     no_fail: bool,
     quiet: bool,
     verbose: bool,
-    group_by_realm: bool,
+    group_by: str,
 ):
     """
     Analyze Keycloak realm configurations for security issues.
@@ -74,6 +75,7 @@ def analyze(
         keycloak-analyzer ./keycloak-configs --format json --output report.json
         keycloak-analyzer ./keycloak-configs --format html --output report.html
         keycloak-analyzer ./keycloak-configs --severity high --no-fail
+        keycloak-analyzer ./keycloak-configs --group-by client
     """
     # Configure logging level
     if verbose:
@@ -161,7 +163,7 @@ def analyze(
 
         if format == "console" or (format == "all" and not quiet):
             reporter = ConsoleReporter()
-            reporter.generate(findings, summary, group_by_realm=group_by_realm)
+            reporter.generate(findings, summary, group_by=group_by)
 
         if format == "json" or format == "all":
             if not output:
@@ -170,7 +172,7 @@ def analyze(
 
             json_path = output if format == "json" else f"{output}.json"
             reporter = JSONReporter()
-            content = reporter.generate(findings, summary)
+            content = reporter.generate(findings, summary, group_by=group_by)
             reporter.save(content, json_path)
 
             if not quiet:
@@ -183,7 +185,7 @@ def analyze(
 
             html_path = output if format == "html" else f"{output}.html"
             reporter = HTMLReporter()
-            content = reporter.generate(findings, summary)
+            content = reporter.generate(findings, summary, group_by=group_by)
             reporter.save(content, html_path)
 
             if not quiet:

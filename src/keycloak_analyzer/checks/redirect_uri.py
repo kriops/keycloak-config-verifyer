@@ -1,6 +1,7 @@
 """Redirect URI validation checks."""
 
 from typing import List
+from urllib.parse import urlparse
 
 from .base import SecurityCheck, security_check
 from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
@@ -393,11 +394,12 @@ class PathTraversalRedirectURICheck(SecurityCheck):
         findings = []
 
         # Patterns that indicate potential path traversal or parser confusion
-        dangerous_patterns = [
+        # These patterns should only be checked in the path component, not the scheme
+        path_patterns = [
             ('../', 'Parent directory traversal'),
             ('./', 'Relative path'),
             ('.//', 'Double slash relative path'),
-            ('//', 'Protocol-relative URL'),
+            ('//', 'Double slash in path'),
             ('@', 'Username in URL (parser confusion)'),
             ('%2e%2e', 'URL-encoded dot-dot'),
             ('%2f', 'URL-encoded slash'),
@@ -409,10 +411,51 @@ class PathTraversalRedirectURICheck(SecurityCheck):
         suspicious_uris = []
         for uri in client.redirectUris:
             uri_lower = uri.lower()
-            for pattern, description in dangerous_patterns:
-                if pattern in uri_lower:
-                    suspicious_uris.append((uri, pattern, description))
-                    break  # Only report once per URI
+
+            # Check for protocol-relative URLs (start with //)
+            if uri_lower.startswith('//'):
+                suspicious_uris.append((uri, '//', 'Protocol-relative URL'))
+                continue
+
+            # Parse URL to extract components
+            try:
+                parsed = urlparse(uri_lower)
+
+                # Check for @ symbol in netloc (parser confusion attack)
+                # Example: https://good.com@attacker.com/callback
+                if '@' in parsed.netloc:
+                    suspicious_uris.append((uri, '@', 'Username in URL (parser confusion)'))
+                    continue
+
+                # Check for backslash in netloc (Windows path separator confusion)
+                # Example: https://example.com\attacker.com
+                if '\\' in parsed.netloc:
+                    suspicious_uris.append((uri, '\\', 'Backslash (Windows path separator)'))
+                    continue
+
+                # Only check patterns in the path component (after the domain)
+                path = parsed.path
+                query = parsed.query
+                fragment = parsed.fragment
+
+                # Combine path, query, and fragment for pattern checking
+                # (patterns could appear in query params or fragments too)
+                path_and_params = path + ('?' + query if query else '') + ('#' + fragment if fragment else '')
+
+                for pattern, description in path_patterns:
+                    if pattern in path_and_params:
+                        suspicious_uris.append((uri, pattern, description))
+                        break  # Only report once per URI
+            except Exception:
+                # If parsing fails, fall back to simple check but skip '//'
+                # (malformed URIs are suspicious anyway)
+                for pattern, description in path_patterns:
+                    if pattern == '//' and not uri_lower.startswith('//'):
+                        # Skip checking '//' in the middle if we already checked the start
+                        continue
+                    if pattern in uri_lower:
+                        suspicious_uris.append((uri, pattern, description))
+                        break  # Only report once per URI
 
         if suspicious_uris:
             findings.append(

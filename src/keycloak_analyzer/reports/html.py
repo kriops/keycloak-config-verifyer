@@ -11,13 +11,16 @@ from ..models import Finding, Severity
 class HTMLReporter(Reporter):
     """Interactive HTML report with JavaScript filtering."""
 
-    def generate(self, findings: List[Finding], summary: ReportSummary) -> str:
+    def generate(
+        self, findings: List[Finding], summary: ReportSummary, group_by: str = "severity"
+    ) -> str:
         """
         Generate HTML report.
 
         Args:
             findings: List of findings to report.
             summary: Summary statistics.
+            group_by: Grouping mode - "severity" (default), "realm", or "client".
 
         Returns:
             Complete HTML document as string.
@@ -175,12 +178,20 @@ class HTMLReporter(Reporter):
 """
 
         # Filters
-        html += """        <div class="filters">
+        severity_checked = 'checked' if group_by == 'severity' else ''
+        realm_checked = 'checked' if group_by == 'realm' else ''
+        client_checked = 'checked' if group_by == 'client' else ''
+
+        html += f"""        <div class="filters">
             <h3>Filters</h3>
             <div class="filter-options">
                 <div style="margin-bottom: 15px;">
-                    <label style="font-weight: 600; margin-bottom: 10px; display: block;">Group by Realm</label>
-                    <label><input type="checkbox" id="group-by-realm"> Enable realm grouping</label>
+                    <label style="font-weight: 600; margin-bottom: 10px; display: block;">Group By</label>
+                    <div class="filter-options">
+                        <label><input type="radio" name="grouping" value="severity" {severity_checked}> Severity (default)</label>
+                        <label><input type="radio" name="grouping" value="realm" {realm_checked}> Realm</label>
+                        <label><input type="radio" name="grouping" value="client" {client_checked}> Client</label>
+                    </div>
                 </div>
                 <div>
                     <label style="font-weight: 600; margin-bottom: 10px; display: block;">Filter by Severity</label>
@@ -221,38 +232,90 @@ class HTMLReporter(Reporter):
         const findingsContainer = document.getElementById('findings-container');
         const originalFindings = Array.from(findingsContainer.querySelectorAll('.finding')).map(f => f.cloneNode(true));
 
-        // Filter findings by severity
+        // Filter and grouping controls
         const filterCheckboxes = document.querySelectorAll('.severity-filter');
-        const groupByRealmCheckbox = document.getElementById('group-by-realm');
+        const groupingRadios = document.querySelectorAll('input[name="grouping"]');
 
         filterCheckboxes.forEach(checkbox => {
-            checkbox.addEventListener('change', filterFindings);
+            checkbox.addEventListener('change', applyFiltersAndGrouping);
         });
 
-        groupByRealmCheckbox.addEventListener('change', toggleGrouping);
+        groupingRadios.forEach(radio => {
+            radio.addEventListener('change', applyFiltersAndGrouping);
+        });
 
-        function toggleGrouping() {
-            if (groupByRealmCheckbox.checked) {
-                groupByRealm();
-            } else {
-                ungroupFindings();
-            }
-            filterFindings();
+        // Apply initial grouping if not severity
+        const initialGrouping = document.querySelector('input[name="grouping"]:checked').value;
+        if (initialGrouping !== 'severity') {
+            applyFiltersAndGrouping();
         }
 
-        function groupByRealm() {
-            // Group findings by realm
+        function applyFiltersAndGrouping() {
+            const selectedSeverities = Array.from(filterCheckboxes)
+                .filter(cb => cb.checked)
+                .map(cb => cb.value);
+
+            const selectedGrouping = document.querySelector('input[name="grouping"]:checked').value;
+
+            // Filter findings
+            const visibleFindings = originalFindings.filter(finding => {
+                const severity = finding.dataset.severity;
+                return selectedSeverities.includes(severity);
+            });
+
+            // Apply grouping
+            findingsContainer.innerHTML = '';
+
+            if (selectedGrouping === 'client') {
+                groupByClient(visibleFindings);
+            } else if (selectedGrouping === 'realm') {
+                groupByRealm(visibleFindings);
+            } else {
+                groupBySeverity(visibleFindings);
+            }
+        }
+
+        function groupBySeverity(findings) {
+            const severityOrder = ['Critical', 'High', 'Medium', 'Low', 'Info'];
+
+            severityOrder.forEach(severity => {
+                const severityFindings = findings.filter(f => f.dataset.severity === severity);
+                if (severityFindings.length > 0) {
+                    const severityHeader = document.createElement('div');
+                    severityHeader.className = 'realm-header';
+                    severityHeader.style.background = getSeverityColor(severity);
+                    severityHeader.innerHTML = `
+                        <span>⚡ Severity: ${severity} (${severityFindings.length} findings)</span>
+                        <span class="realm-toggle">▼</span>
+                    `;
+
+                    const severityContent = document.createElement('div');
+                    severityContent.className = 'realm-findings';
+
+                    severityFindings.forEach(finding => {
+                        severityContent.appendChild(finding.cloneNode(true));
+                    });
+
+                    severityHeader.addEventListener('click', () => {
+                        severityContent.classList.toggle('collapsed');
+                        severityHeader.querySelector('.realm-toggle').classList.toggle('collapsed');
+                    });
+
+                    findingsContainer.appendChild(severityHeader);
+                    findingsContainer.appendChild(severityContent);
+                }
+            });
+        }
+
+        function groupByRealm(findings) {
             const findingsByRealm = {};
-            originalFindings.forEach(finding => {
-                const realm = finding.querySelector('.finding-meta span:nth-child(3)').textContent.replace('Realm: ', '').trim();
+            findings.forEach(finding => {
+                const realm = finding.dataset.realm;
                 if (!findingsByRealm[realm]) {
                     findingsByRealm[realm] = [];
                 }
                 findingsByRealm[realm].push(finding.cloneNode(true));
             });
-
-            // Clear container and rebuild with groups
-            findingsContainer.innerHTML = '';
 
             Object.keys(findingsByRealm).sort().forEach(realm => {
                 const realmGroup = document.createElement('div');
@@ -272,7 +335,6 @@ class HTMLReporter(Reporter):
                     realmFindings.appendChild(finding);
                 });
 
-                // Toggle collapse
                 realmHeader.addEventListener('click', () => {
                     realmFindings.classList.toggle('collapsed');
                     realmHeader.querySelector('.realm-toggle').classList.toggle('collapsed');
@@ -284,48 +346,102 @@ class HTMLReporter(Reporter):
             });
         }
 
-        function ungroupFindings() {
-            findingsContainer.innerHTML = '';
-            originalFindings.forEach(finding => {
-                findingsContainer.appendChild(finding.cloneNode(true));
+        function groupByClient(findings) {
+            // Filter to only client-level findings
+            const clientFindings = findings.filter(f => f.dataset.clientId && f.dataset.clientId !== '');
+
+            if (clientFindings.length === 0) {
+                const notice = document.createElement('div');
+                notice.className = 'exit-code-warning';
+                notice.style.cssText = 'margin: 20px; padding: 20px; background: #fff3cd; border: 1px solid #ffc107; border-radius: 8px;';
+                notice.innerHTML = '<strong>ℹ️  No client-level findings to display.</strong> Use a different grouping to see realm-level findings.';
+                findingsContainer.appendChild(notice);
+                return;
+            }
+
+            // Group by realm, then by client
+            const findingsByRealm = {};
+            clientFindings.forEach(finding => {
+                const realm = finding.dataset.realm;
+                const client = finding.dataset.clientId;
+
+                if (!findingsByRealm[realm]) {
+                    findingsByRealm[realm] = {};
+                }
+                if (!findingsByRealm[realm][client]) {
+                    findingsByRealm[realm][client] = [];
+                }
+                findingsByRealm[realm][client].push(finding.cloneNode(true));
+            });
+
+            // Render hierarchically
+            Object.keys(findingsByRealm).sort().forEach(realm => {
+                const realmGroup = document.createElement('div');
+                realmGroup.className = 'realm-group';
+
+                const totalFindings = Object.values(findingsByRealm[realm]).reduce((sum, arr) => sum + arr.length, 0);
+                const clientCount = Object.keys(findingsByRealm[realm]).length;
+
+                const realmHeader = document.createElement('div');
+                realmHeader.className = 'realm-header';
+                realmHeader.innerHTML = `
+                    <span>🏰 Realm: ${realm} (${clientCount} clients, ${totalFindings} findings)</span>
+                    <span class="realm-toggle">▼</span>
+                `;
+
+                const realmContent = document.createElement('div');
+                realmContent.className = 'realm-findings';
+
+                // Add clients within realm
+                Object.keys(findingsByRealm[realm]).sort().forEach(client => {
+                    const clientHeader = document.createElement('div');
+                    clientHeader.style.cssText = 'background: #6c757d; color: #fff; padding: 10px 15px; margin-bottom: 10px; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; justify-content: space-between; align-items: center;';
+                    clientHeader.innerHTML = `
+                        <span>🔧 Client: ${client} (${findingsByRealm[realm][client].length} findings)</span>
+                        <span class="client-toggle">▼</span>
+                    `;
+
+                    const clientContent = document.createElement('div');
+                    clientContent.style.cssText = 'display: grid; gap: 15px; margin-bottom: 20px; padding-left: 20px;';
+
+                    findingsByRealm[realm][client].forEach(finding => {
+                        clientContent.appendChild(finding);
+                    });
+
+                    clientHeader.addEventListener('click', () => {
+                        if (clientContent.style.display === 'none') {
+                            clientContent.style.display = 'grid';
+                            clientHeader.querySelector('.client-toggle').textContent = '▼';
+                        } else {
+                            clientContent.style.display = 'none';
+                            clientHeader.querySelector('.client-toggle').textContent = '▶';
+                        }
+                    });
+
+                    realmContent.appendChild(clientHeader);
+                    realmContent.appendChild(clientContent);
+                });
+
+                realmHeader.addEventListener('click', () => {
+                    realmContent.classList.toggle('collapsed');
+                    realmHeader.querySelector('.realm-toggle').classList.toggle('collapsed');
+                });
+
+                realmGroup.appendChild(realmHeader);
+                realmGroup.appendChild(realmContent);
+                findingsContainer.appendChild(realmGroup);
             });
         }
 
-        function filterFindings() {
-            const selectedSeverities = Array.from(filterCheckboxes)
-                .filter(cb => cb.checked)
-                .map(cb => cb.value);
-
-            document.querySelectorAll('.finding').forEach(finding => {
-                const severity = finding.dataset.severity;
-                if (selectedSeverities.includes(severity)) {
-                    finding.classList.remove('hidden');
-                } else {
-                    finding.classList.add('hidden');
-                }
-            });
-
-            // Update counts in realm headers if grouped
-            if (groupByRealmCheckbox.checked) {
-                document.querySelectorAll('.realm-group').forEach(group => {
-                    const visibleCount = group.querySelectorAll('.finding:not(.hidden)').length;
-                    const totalCount = group.querySelectorAll('.finding').length;
-                    const realm = group.querySelector('.realm-header span:first-child').textContent.split('(')[0].trim();
-                    group.querySelector('.realm-header span:first-child').textContent =
-                        `${realm} (${visibleCount} of ${totalCount} findings)`;
-
-                    // Hide realm group if no visible findings
-                    if (visibleCount === 0) {
-                        group.style.display = 'none';
-                    } else {
-                        group.style.display = 'block';
-                    }
-                });
-            }
-
-            // Update count
-            const visibleCount = document.querySelectorAll('.finding:not(.hidden)').length;
-            console.log(`Showing ${visibleCount} of ${document.querySelectorAll('.finding').length} findings`);
+        function getSeverityColor(severity) {
+            const colors = {
+                'Critical': '#dc3545',
+                'High': '#fd7e14',
+                'Medium': '#ffc107',
+                'Low': '#17a2b8',
+                'Info': '#28a745'
+            };
+            return colors[severity] || '#6c757d';
         }
     </script>
 </body>
@@ -350,7 +466,7 @@ class HTMLReporter(Reporter):
         color = self.severity_html_color(finding.severity)
         severity_lower = finding.severity.value.lower()
 
-        html = f"""            <div class="finding" data-severity="{escape(finding.severity.value)}" data-realm="{escape(finding.realm_name)}" style="border-left-color: {color};">
+        html = f"""            <div class="finding" data-severity="{escape(finding.severity.value)}" data-realm="{escape(finding.realm_name)}" data-client-id="{escape(finding.client_id or '')}" style="border-left-color: {color};">
                 <div class="finding-header">
                     <div class="finding-title">{escape(finding.title)}</div>
                     <span class="finding-badge severity-{severity_lower}" style="background-color: {color};">

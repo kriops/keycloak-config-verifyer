@@ -94,9 +94,7 @@ class RealmLoader:
 
             for idx, realm_data in enumerate(data):
                 if not isinstance(realm_data, dict):
-                    logger.warning(
-                        f"Skipping invalid realm entry at index {idx} in {file_path}"
-                    )
+                    logger.warning(f"Skipping invalid realm entry at index {idx} in {file_path}")
                     continue
 
                 try:
@@ -118,9 +116,7 @@ class RealmLoader:
 
         return realms
 
-    def _create_realm_config(
-        self, data: dict[str, Any], file_path: Path
-    ) -> RealmConfig:
+    def _create_realm_config(self, data: dict[str, Any], file_path: Path) -> RealmConfig:
         """
         Create a RealmConfig from dictionary data.
 
@@ -141,9 +137,7 @@ class RealmLoader:
         realm.file_path = str(file_path)
         realm.file_size = file_path.stat().st_size if file_path.exists() else None
 
-        logger.debug(
-            f"Loaded realm '{realm.realm}' with {len(realm.clients)} client(s)"
-        )
+        logger.debug(f"Loaded realm '{realm.realm}' with {len(realm.clients)} client(s)")
 
         return realm
 
@@ -170,9 +164,7 @@ class RealmLoader:
                 logger.error(f"Failed to load {file_path}: {e}")
                 continue
 
-        logger.info(
-            f"Loaded {len(all_realms)} realm(s) from {len(file_paths)} file(s)"
-        )
+        logger.info(f"Loaded {len(all_realms)} realm(s) from {len(file_paths)} file(s)")
 
         return all_realms
 

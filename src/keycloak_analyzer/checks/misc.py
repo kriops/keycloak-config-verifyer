@@ -1,6 +1,5 @@
 """Miscellaneous security checks (Low and Info severity)."""
 
-
 from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
 
@@ -161,8 +160,8 @@ class ClientSecretsInExportCheck(SecurityCheck):
                         f"3. Remove or redact the 'secret' field:\n"
                         f"   ```json\n"
                         f"   {{\n"
-                        f"     \"clientId\": \"{client.clientId}\",\n"
-                        f"     \"secret\": \"**REMOVED**\",  // or delete this line\n"
+                        f'     "clientId": "{client.clientId}",\n'
+                        f'     "secret": "**REMOVED**",  // or delete this line\n'
                         f"     ...\n"
                         f"   }}\n"
                         f"   ```\n"
@@ -390,7 +389,8 @@ class ExcessiveImplicitTokenLifespanCheck(SecurityCheck):
                     evidence={
                         "realm": realm.realm,
                         "implicit_token_lifespan": realm.accessTokenLifespanForImplicitFlow,
-                        "implicit_token_lifespan_minutes": realm.accessTokenLifespanForImplicitFlow // 60,
+                        "implicit_token_lifespan_minutes": realm.accessTokenLifespanForImplicitFlow
+                        // 60,
                         "recommended_max": self.MAX_IMPLICIT_LIFESPAN,
                         "has_implicit_clients": has_implicit,
                         "implicit_client_count": sum(
@@ -406,6 +406,7 @@ class ExcessiveImplicitTokenLifespanCheck(SecurityCheck):
 @security_check
 class ServiceAccountsEnabledCheck(SecurityCheck):
     """Check if service accounts are enabled. Review necessity and audit usage."""
+
     check_id = "KC-MISC-005"
     check_name = "Service Accounts Enabled (Review)"
     category = FindingCategory.MISC
@@ -415,38 +416,42 @@ class ServiceAccountsEnabledCheck(SecurityCheck):
     def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
         if client.serviceAccountsEnabled:
-            findings.append(self.create_finding(
-                title=f"Service accounts enabled for client '{client.clientId}'",
-                description=(
-                    f"Client '{client.clientId}' has service accounts enabled (client credentials grant). "
-                    f"While not inherently insecure, ensure this is necessary and properly audited.\n\n"
-                    f"**Service Account Usage:**\n"
-                    f"- Machine-to-machine authentication\n"
-                    f"- Background processes, CI/CD pipelines\n"
-                    f"- No user context\n\n"
-                    f"**Review Points:**\n"
-                    f"- Is service account access still needed?\n"
-                    f"- Are service account actions logged?\n"
-                    f"- Are credentials stored securely?\n"
-                    f"- Is scope limited to minimum required?"
-                ),
-                remediation=(
-                    f"Review service account usage for client '{client.clientId}':\n\n"
-                    f"1. Verify necessity - disable if not needed\n"
-                    f"2. Limit scope to minimum required permissions\n"
-                    f"3. Enable audit logging for service account actions\n"
-                    f"4. Rotate credentials regularly\n"
-                    f"5. Store credentials in secure vault (not source code)"
-                ),
-                realm=realm, client=client,
-                evidence={"client_id": client.clientId, "service_accounts_enabled": True}
-            ))
+            findings.append(
+                self.create_finding(
+                    title=f"Service accounts enabled for client '{client.clientId}'",
+                    description=(
+                        f"Client '{client.clientId}' has service accounts enabled (client credentials grant). "
+                        f"While not inherently insecure, ensure this is necessary and properly audited.\n\n"
+                        f"**Service Account Usage:**\n"
+                        f"- Machine-to-machine authentication\n"
+                        f"- Background processes, CI/CD pipelines\n"
+                        f"- No user context\n\n"
+                        f"**Review Points:**\n"
+                        f"- Is service account access still needed?\n"
+                        f"- Are service account actions logged?\n"
+                        f"- Are credentials stored securely?\n"
+                        f"- Is scope limited to minimum required?"
+                    ),
+                    remediation=(
+                        f"Review service account usage for client '{client.clientId}':\n\n"
+                        f"1. Verify necessity - disable if not needed\n"
+                        f"2. Limit scope to minimum required permissions\n"
+                        f"3. Enable audit logging for service account actions\n"
+                        f"4. Rotate credentials regularly\n"
+                        f"5. Store credentials in secure vault (not source code)"
+                    ),
+                    realm=realm,
+                    client=client,
+                    evidence={"client_id": client.clientId, "service_accounts_enabled": True},
+                )
+            )
         return findings
 
 
 @security_check
 class NoUserConsentRequiredCheck(SecurityCheck):
     """Check if user consent is not required for third-party apps."""
+
     check_id = "KC-MISC-006"
     check_name = "No User Consent Required"
     category = FindingCategory.MISC
@@ -456,35 +461,38 @@ class NoUserConsentRequiredCheck(SecurityCheck):
     def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
         if not client.consentRequired and not client.is_public and client.standardFlowEnabled:
-            findings.append(self.create_finding(
-                title=f"No user consent required for client '{client.clientId}'",
-                description=(
-                    f"Client '{client.clientId}' does not require user consent. "
-                    f"For third-party applications, users should explicitly approve access to their data.\n\n"
-                    f"**User Consent Benefits:**\n"
-                    f"- Users see what permissions are granted\n"
-                    f"- Users can decline access\n"
-                    f"- Transparency and trust\n"
-                    f"- Compliance with privacy regulations (GDPR, CCPA)\n\n"
-                    f"**When Consent is Recommended:**\n"
-                    f"- Third-party applications\n"
-                    f"- Apps accessing sensitive data\n"
-                    f"- Compliance requirements\n\n"
-                    f"**When Consent May Be Skipped:**\n"
-                    f"- First-party applications\n"
-                    f"- Single sign-on within organization"
-                ),
-                remediation=(
-                    f"Enable user consent for client '{client.clientId}':\n\n"
-                    f"1. Log into Keycloak Admin Console\n"
-                    f"2. Navigate to: Clients → '{client.clientId}'\n"
-                    f"3. Go to: Settings tab\n"
-                    f"4. Enable: 'Consent Required'\n"
-                    f"5. Define consent text and display name\n"
-                    f"6. Click 'Save'\n\n"
-                    f"Users will now see a consent screen showing requested permissions."
-                ),
-                realm=realm, client=client,
-                evidence={"client_id": client.clientId, "consent_required": False}
-            ))
+            findings.append(
+                self.create_finding(
+                    title=f"No user consent required for client '{client.clientId}'",
+                    description=(
+                        f"Client '{client.clientId}' does not require user consent. "
+                        f"For third-party applications, users should explicitly approve access to their data.\n\n"
+                        f"**User Consent Benefits:**\n"
+                        f"- Users see what permissions are granted\n"
+                        f"- Users can decline access\n"
+                        f"- Transparency and trust\n"
+                        f"- Compliance with privacy regulations (GDPR, CCPA)\n\n"
+                        f"**When Consent is Recommended:**\n"
+                        f"- Third-party applications\n"
+                        f"- Apps accessing sensitive data\n"
+                        f"- Compliance requirements\n\n"
+                        f"**When Consent May Be Skipped:**\n"
+                        f"- First-party applications\n"
+                        f"- Single sign-on within organization"
+                    ),
+                    remediation=(
+                        f"Enable user consent for client '{client.clientId}':\n\n"
+                        f"1. Log into Keycloak Admin Console\n"
+                        f"2. Navigate to: Clients → '{client.clientId}'\n"
+                        f"3. Go to: Settings tab\n"
+                        f"4. Enable: 'Consent Required'\n"
+                        f"5. Define consent text and display name\n"
+                        f"6. Click 'Save'\n\n"
+                        f"Users will now see a consent screen showing requested permissions."
+                    ),
+                    realm=realm,
+                    client=client,
+                    evidence={"client_id": client.clientId, "consent_required": False},
+                )
+            )
         return findings

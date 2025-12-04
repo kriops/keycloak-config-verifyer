@@ -1,6 +1,5 @@
 """Token security checks."""
 
-
 from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
 
@@ -327,8 +326,8 @@ class BearerTokensNotSenderConstrainedCheck(SecurityCheck):
                         f"Client '{client.clientId}' uses **bearer tokens without sender-constraining**, "
                         f"making stolen tokens fully reusable by attackers.\n\n"
                         f"**What Are Bearer Tokens?**\n"
-                        f"Bearer tokens are like \"keys\" that grant access to resources. Whoever "
-                        f"possesses the token can use it (\"bearer\" = holder). This makes them "
+                        f'Bearer tokens are like "keys" that grant access to resources. Whoever '
+                        f'possesses the token can use it ("bearer" = holder). This makes them '
                         f"vulnerable if stolen.\n\n"
                         f"**What Is Sender-Constraining?**\n"
                         f"Sender-constraining binds tokens to the client that obtained them, "
@@ -365,12 +364,12 @@ class BearerTokensNotSenderConstrainedCheck(SecurityCheck):
                         f"- No binding to originating device\n"
                         f"- Attackers accessed private repositories\n\n"
                         f"**RFC 9700 Recommendation:**\n"
-                        f"\"Authorization servers SHOULD use mechanisms for sender-constraining "
-                        f"access tokens to mitigate the risk of token theft and replay.\"\n\n"
+                        f'"Authorization servers SHOULD use mechanisms for sender-constraining '
+                        f'access tokens to mitigate the risk of token theft and replay."\n\n'
                         f"**Current Configuration:**\n"
                         f"- DPoP Enabled: No\n"
                         f"- mTLS Token Binding: No\n"
-                        f"- **Result:** Tokens are \"golden tickets\" - steal once, use anywhere"
+                        f'- **Result:** Tokens are "golden tickets" - steal once, use anywhere'
                     ),
                     remediation=(
                         f"Implement sender-constrained tokens for client '{client.clientId}':\n\n"
@@ -480,5 +479,7 @@ class BearerTokensNotSenderConstrainedCheck(SecurityCheck):
     def _has_mtls_token_binding(self, client: ClientConfig) -> bool:
         """Check if mTLS certificate-bound tokens are enabled."""
         # Keycloak stores mTLS token binding in attributes
-        mtls_binding = client.attributes.get("tls.client.certificate.bound.access.tokens", "").lower()
+        mtls_binding = client.attributes.get(
+            "tls.client.certificate.bound.access.tokens", ""
+        ).lower()
         return mtls_binding == "true"

@@ -80,9 +80,7 @@ def filter_client_level_findings(findings: list[Finding]) -> list[Finding]:
     return [f for f in findings if f.client_id is not None]
 
 
-def count_findings_in_nested_groups(
-    groups: dict[str, dict[str, list[Finding]]]
-) -> int:
+def count_findings_in_nested_groups(groups: dict[str, dict[str, list[Finding]]]) -> int:
     """
     Count total findings in a nested group structure.
 

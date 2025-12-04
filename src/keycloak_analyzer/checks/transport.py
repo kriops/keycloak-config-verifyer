@@ -1,6 +1,5 @@
 """Transport security checks."""
 
-
 from ..models import Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
 

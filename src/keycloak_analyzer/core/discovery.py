@@ -127,6 +127,5 @@ class RealmDiscovery:
     def __repr__(self) -> str:
         """Developer-friendly representation."""
         return (
-            f"RealmDiscovery(patterns={self.REALM_PATTERNS}, "
-            f"skip_dirs={len(self.SKIP_DIRS)})"
+            f"RealmDiscovery(patterns={self.REALM_PATTERNS}, " f"skip_dirs={len(self.SKIP_DIRS)})"
         )

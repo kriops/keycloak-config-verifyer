@@ -1,6 +1,5 @@
 """PKCE (Proof Key for Code Exchange) security checks."""
 
-
 from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
 

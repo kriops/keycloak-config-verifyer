@@ -96,9 +96,7 @@ class SecurityAnalyzer:
             realm_findings = self._analyze_realm(realm)
             all_findings.extend(realm_findings)
 
-            logger.debug(
-                f"Realm '{realm.realm}': {len(realm_findings)} realm-level finding(s)"
-            )
+            logger.debug(f"Realm '{realm.realm}': {len(realm_findings)} realm-level finding(s)")
 
             # Run client-level checks
             client_findings = self._analyze_clients(realm)

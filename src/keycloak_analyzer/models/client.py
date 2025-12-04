@@ -81,7 +81,7 @@ class ClientConfig(BaseModel):
     def has_wildcard_redirect(self) -> bool:
         """Check if any redirect URI uses wildcards."""
         for uri in self.redirectUris:
-            if '*' in uri or uri == '' or '+' in uri:
+            if "*" in uri or uri == "" or "+" in uri:
                 return True
         return False
 
@@ -94,9 +94,9 @@ class ClientConfig(BaseModel):
             True if non-localhost HTTP redirect URIs exist.
         """
         for uri in self.redirectUris:
-            if uri.startswith('http://'):
+            if uri.startswith("http://"):
                 # Allow localhost for native apps
-                if not ('localhost' in uri or '127.0.0.1' in uri):
+                if not ("localhost" in uri or "127.0.0.1" in uri):
                     return True
         return False
 
@@ -104,7 +104,7 @@ class ClientConfig(BaseModel):
     def has_wildcard_web_origin(self) -> bool:
         """Check if any web origin uses wildcards."""
         for origin in self.webOrigins:
-            if '*' in origin or origin == '+':
+            if "*" in origin or origin == "+":
                 return True
         return False
 

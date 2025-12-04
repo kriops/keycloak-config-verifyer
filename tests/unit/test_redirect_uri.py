@@ -40,7 +40,9 @@ def test_path_traversal_no_false_positives_for_https(realm):
     findings = check.check_client(client, realm)
 
     # Should have NO findings for legitimate URLs
-    assert len(findings) == 0, f"Expected no findings, but got {len(findings)}: {[f.title for f in findings]}"
+    assert (
+        len(findings) == 0
+    ), f"Expected no findings, but got {len(findings)}: {[f.title for f in findings]}"
 
 
 def test_path_traversal_detects_protocol_relative_urls(realm):

@@ -162,11 +162,7 @@ class CheckRegistry:
         Returns:
             List of SecurityCheck instances matching the category.
         """
-        return [
-            check_class()
-            for check_class in cls._checks
-            if check_class.category == category
-        ]
+        return [check_class() for check_class in cls._checks if check_class.category == category]
 
     @classmethod
     def get_checks_by_severity(cls, severity: Severity) -> list[SecurityCheck]:
@@ -180,9 +176,7 @@ class CheckRegistry:
             List of SecurityCheck instances matching the severity.
         """
         return [
-            check_class()
-            for check_class in cls._checks
-            if check_class.default_severity == severity
+            check_class() for check_class in cls._checks if check_class.default_severity == severity
         ]
 
     @classmethod

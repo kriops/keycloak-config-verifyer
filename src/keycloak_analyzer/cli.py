@@ -12,9 +12,7 @@ from .models import Severity
 from .reports import ConsoleReporter, HTMLReporter, JSONReporter, ReportSummary
 
 # Configure logging
-logging.basicConfig(
-    level=logging.INFO, format="%(levelname)s: %(message)s", stream=sys.stderr
-)
+logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s", stream=sys.stderr)
 logger = logging.getLogger(__name__)
 
 
@@ -27,9 +25,7 @@ logger = logging.getLogger(__name__)
     default="console",
     help="Output format (default: console)",
 )
-@click.option(
-    "--output", "-o", type=click.Path(), help="Output file path (required for json/html)"
-)
+@click.option("--output", "-o", type=click.Path(), help="Output file path (required for json/html)")
 @click.option(
     "--severity",
     "-s",
@@ -41,12 +37,8 @@ logger = logging.getLogger(__name__)
     is_flag=True,
     help="Always exit with code 0 (ignore Critical/High findings)",
 )
-@click.option(
-    "--quiet", "-q", is_flag=True, help="Suppress console output"
-)
-@click.option(
-    "--verbose", "-v", is_flag=True, help="Enable verbose logging"
-)
+@click.option("--quiet", "-q", is_flag=True, help="Suppress console output")
+@click.option("--verbose", "-v", is_flag=True, help="Enable verbose logging")
 @click.option(
     "--group-by",
     "-g",
@@ -93,9 +85,7 @@ def analyze(
 
         if not realm_files:
             click.echo("❌ No Keycloak realm export files found.", err=True)
-            click.echo(
-                f"   Searched for: {', '.join(discovery.REALM_PATTERNS)}", err=True
-            )
+            click.echo(f"   Searched for: {', '.join(discovery.REALM_PATTERNS)}", err=True)
             sys.exit(1)
 
         if not quiet:
@@ -126,9 +116,7 @@ def analyze(
 
         if not quiet:
             total_clients = sum(len(r.clients) for r in realms)
-            click.echo(
-                f"✓ Loaded {len(realms)} realm(s) with {total_clients} client(s)"
-            )
+            click.echo(f"✓ Loaded {len(realms)} realm(s) with {total_clients} client(s)")
 
         # Step 3: Run security analysis
         if not quiet:
@@ -149,9 +137,7 @@ def analyze(
                 Severity.INFO,
             ]
             min_index = severity_order.index(min_severity)
-            findings = [
-                f for f in findings if severity_order.index(f.severity) <= min_index
-            ]
+            findings = [f for f in findings if severity_order.index(f.severity) <= min_index]
 
         if not quiet:
             click.echo(f"✓ Analysis complete: {len(findings)} finding(s)")

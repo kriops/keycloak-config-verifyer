@@ -105,11 +105,7 @@ class RealmConfig(BaseModel):
 
     def __str__(self) -> str:
         """Human-readable string representation."""
-        return (
-            f"Realm('{self.realm}', "
-            f"clients={len(self.clients)}, "
-            f"enabled={self.enabled})"
-        )
+        return f"Realm('{self.realm}', " f"clients={len(self.clients)}, " f"enabled={self.enabled})"
 
     def __repr__(self) -> str:
         """Developer-friendly representation."""

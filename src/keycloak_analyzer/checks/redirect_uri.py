@@ -31,9 +31,7 @@ class WildcardRedirectURICheck(SecurityCheck):
         if client.has_wildcard_redirect:
             # Collect all wildcard URIs
             wildcard_uris = [
-                uri
-                for uri in client.redirectUris
-                if '*' in uri or uri == '' or '+' in uri
+                uri for uri in client.redirectUris if "*" in uri or uri == "" or "+" in uri
             ]
 
             findings.append(
@@ -114,7 +112,7 @@ class WildcardRedirectURICheck(SecurityCheck):
         # Also check web origins
         if client.has_wildcard_web_origin:
             wildcard_origins = [
-                origin for origin in client.webOrigins if '*' in origin or origin == '+'
+                origin for origin in client.webOrigins if "*" in origin or origin == "+"
             ]
 
             findings.append(
@@ -189,9 +187,7 @@ class HTTPRedirectURICheck(SecurityCheck):
             http_uris = [
                 uri
                 for uri in client.redirectUris
-                if uri.startswith('http://')
-                and 'localhost' not in uri
-                and '127.0.0.1' not in uri
+                if uri.startswith("http://") and "localhost" not in uri and "127.0.0.1" not in uri
             ]
 
             if http_uris:
@@ -294,7 +290,7 @@ class LocalhostInProductionCheck(SecurityCheck):
         localhost_uris = [
             uri
             for uri in client.redirectUris
-            if 'localhost' in uri.lower() or '127.0.0.1' in uri or '[::1]' in uri
+            if "localhost" in uri.lower() or "127.0.0.1" in uri or "[::1]" in uri
         ]
 
         if localhost_uris:
@@ -395,16 +391,16 @@ class PathTraversalRedirectURICheck(SecurityCheck):
         # Patterns that indicate potential path traversal or parser confusion
         # These patterns should only be checked in the path component, not the scheme
         path_patterns = [
-            ('../', 'Parent directory traversal'),
-            ('./', 'Relative path'),
-            ('.//', 'Double slash relative path'),
-            ('//', 'Double slash in path'),
-            ('@', 'Username in URL (parser confusion)'),
-            ('%2e%2e', 'URL-encoded dot-dot'),
-            ('%2f', 'URL-encoded slash'),
-            ('%5c', 'URL-encoded backslash'),
-            ('\\', 'Backslash (Windows path separator)'),
-            ('%00', 'Null byte injection'),
+            ("../", "Parent directory traversal"),
+            ("./", "Relative path"),
+            (".//", "Double slash relative path"),
+            ("//", "Double slash in path"),
+            ("@", "Username in URL (parser confusion)"),
+            ("%2e%2e", "URL-encoded dot-dot"),
+            ("%2f", "URL-encoded slash"),
+            ("%5c", "URL-encoded backslash"),
+            ("\\", "Backslash (Windows path separator)"),
+            ("%00", "Null byte injection"),
         ]
 
         suspicious_uris = []
@@ -412,8 +408,8 @@ class PathTraversalRedirectURICheck(SecurityCheck):
             uri_lower = uri.lower()
 
             # Check for protocol-relative URLs (start with //)
-            if uri_lower.startswith('//'):
-                suspicious_uris.append((uri, '//', 'Protocol-relative URL'))
+            if uri_lower.startswith("//"):
+                suspicious_uris.append((uri, "//", "Protocol-relative URL"))
                 continue
 
             # Parse URL to extract components
@@ -422,14 +418,14 @@ class PathTraversalRedirectURICheck(SecurityCheck):
 
                 # Check for @ symbol in netloc (parser confusion attack)
                 # Example: https://good.com@attacker.com/callback
-                if '@' in parsed.netloc:
-                    suspicious_uris.append((uri, '@', 'Username in URL (parser confusion)'))
+                if "@" in parsed.netloc:
+                    suspicious_uris.append((uri, "@", "Username in URL (parser confusion)"))
                     continue
 
                 # Check for backslash in netloc (Windows path separator confusion)
                 # Example: https://example.com\attacker.com
-                if '\\' in parsed.netloc:
-                    suspicious_uris.append((uri, '\\', 'Backslash (Windows path separator)'))
+                if "\\" in parsed.netloc:
+                    suspicious_uris.append((uri, "\\", "Backslash (Windows path separator)"))
                     continue
 
                 # Only check patterns in the path component (after the domain)
@@ -439,7 +435,9 @@ class PathTraversalRedirectURICheck(SecurityCheck):
 
                 # Combine path, query, and fragment for pattern checking
                 # (patterns could appear in query params or fragments too)
-                path_and_params = path + ('?' + query if query else '') + ('#' + fragment if fragment else '')
+                path_and_params = (
+                    path + ("?" + query if query else "") + ("#" + fragment if fragment else "")
+                )
 
                 for pattern, description in path_patterns:
                     if pattern in path_and_params:
@@ -449,7 +447,7 @@ class PathTraversalRedirectURICheck(SecurityCheck):
                 # If parsing fails, fall back to simple check but skip '//'
                 # (malformed URIs are suspicious anyway)
                 for pattern, description in path_patterns:
-                    if pattern == '//' and not uri_lower.startswith('//'):
+                    if pattern == "//" and not uri_lower.startswith("//"):
                         # Skip checking '//' in the middle if we already checked the start
                         continue
                     if pattern in uri_lower:
@@ -563,13 +561,13 @@ class DangerousURISchemeCheck(SecurityCheck):
 
         # Dangerous URI schemes that can execute code or access local resources
         dangerous_schemes = [
-            ('javascript:', 'JavaScript execution (XSS)'),
-            ('data:', 'Data URI execution (XSS)'),
-            ('vbscript:', 'VBScript execution (IE)'),
-            ('file:', 'Local file system access'),
-            ('about:', 'Browser internal pages'),
-            ('blob:', 'Binary data execution'),
-            ('filesystem:', 'Local file system'),
+            ("javascript:", "JavaScript execution (XSS)"),
+            ("data:", "Data URI execution (XSS)"),
+            ("vbscript:", "VBScript execution (IE)"),
+            ("file:", "Local file system access"),
+            ("about:", "Browser internal pages"),
+            ("blob:", "Binary data execution"),
+            ("filesystem:", "Local file system"),
         ]
 
         dangerous_uris = []

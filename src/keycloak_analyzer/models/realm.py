@@ -1,7 +1,9 @@
 """Keycloak realm configuration models."""
 
+from typing import Any, Optional
+
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
+
 from .client import ClientConfig
 
 
@@ -27,19 +29,19 @@ class RealmConfig(BaseModel):
     refreshTokenMaxReuse: int = 0  # 0 = no reuse allowed (rotation)
 
     # Client configurations
-    clients: List[ClientConfig] = Field(default_factory=list)
+    clients: list[ClientConfig] = Field(default_factory=list)
 
     # Authentication flows
-    authenticationFlows: Optional[List[Dict[str, Any]]] = None
+    authenticationFlows: Optional[list[dict[str, Any]]] = None
 
     # Identity providers
-    identityProviders: Optional[List[Dict[str, Any]]] = None
+    identityProviders: Optional[list[dict[str, Any]]] = None
 
     # Custom attributes
-    attributes: Dict[str, str] = Field(default_factory=dict)
+    attributes: dict[str, str] = Field(default_factory=dict)
 
     # Realm-level roles
-    roles: Optional[Dict[str, Any]] = None
+    roles: Optional[dict[str, Any]] = None
 
     # File metadata (not from JSON, added during loading)
     file_path: Optional[str] = Field(None, exclude=True)
@@ -67,22 +69,22 @@ class RealmConfig(BaseModel):
         return self.refreshTokenMaxReuse == 0
 
     @property
-    def public_clients(self) -> List[ClientConfig]:
+    def public_clients(self) -> list[ClientConfig]:
         """Get all public clients in this realm."""
         return [c for c in self.clients if c.is_public]
 
     @property
-    def confidential_clients(self) -> List[ClientConfig]:
+    def confidential_clients(self) -> list[ClientConfig]:
         """Get all confidential clients in this realm."""
         return [c for c in self.clients if c.is_confidential]
 
     @property
-    def clients_with_deprecated_flows(self) -> List[ClientConfig]:
+    def clients_with_deprecated_flows(self) -> list[ClientConfig]:
         """Get all clients using deprecated OAuth flows."""
         return [c for c in self.clients if c.uses_deprecated_flows]
 
     @property
-    def enabled_clients(self) -> List[ClientConfig]:
+    def enabled_clients(self) -> list[ClientConfig]:
         """Get all enabled clients."""
         return [c for c in self.clients if c.enabled]
 

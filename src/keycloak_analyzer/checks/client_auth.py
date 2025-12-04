@@ -1,9 +1,8 @@
 """Client authentication security checks."""
 
-from typing import List
 
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -23,7 +22,7 @@ class ConfidentialClientWithoutAuthCheck(SecurityCheck):
         "RFC 6749 Section 3.2.1 - Token Endpoint Authentication",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Only check confidential clients
@@ -122,7 +121,7 @@ class SymmetricClientAuthenticationCheck(SecurityCheck):
         "OpenID Connect Core - private_key_jwt",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Only check confidential clients

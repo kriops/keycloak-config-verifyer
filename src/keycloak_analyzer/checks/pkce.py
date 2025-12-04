@@ -1,9 +1,8 @@
 """PKCE (Proof Key for Code Exchange) security checks."""
 
-from typing import List
 
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -27,7 +26,7 @@ class PKCENotEnforcedCheck(SecurityCheck):
         "CVE-2023-28131 - Expo PKCE bypass",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Only check public clients using authorization code flow
@@ -113,7 +112,7 @@ class PKCEWeakMethodCheck(SecurityCheck):
         "RFC 7636 - S256 Required",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Only check clients with authorization code flow
@@ -189,7 +188,7 @@ class PKCEOptionalForConfidentialCheck(SecurityCheck):
         "OAuth 2.1 - Defense in Depth",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Check confidential clients
@@ -204,18 +203,18 @@ class PKCEOptionalForConfidentialCheck(SecurityCheck):
                 self.create_finding(
                     title=f"PKCE not enabled for confidential client '{client.clientId}'",
                     description=(
-                        f"While RFC 9700 mandates PKCE for public clients, it's also "
-                        f"**strongly recommended** for confidential clients as a defense-in-depth measure.\n\n"
-                        f"**Benefits of PKCE for Confidential Clients:**\n"
-                        f"1. Additional protection against authorization code interception\n"
-                        f"2. Defense if client secret is compromised or leaked\n"
-                        f"3. Protection in misconfigured environments\n"
-                        f"4. Aligns with OAuth 2.1 best practices\n\n"
-                        f"PKCE provides layered security even when client secrets are used, "
-                        f"protecting against authorization code interception in compromised "
-                        f"environments or misconfigurations.\n\n"
-                        f"**Impact (Medium):** Reduced defense-in-depth, potential vulnerability "
-                        f"if client secret is compromised or environment is misconfigured."
+                        "While RFC 9700 mandates PKCE for public clients, it's also "
+                        "**strongly recommended** for confidential clients as a defense-in-depth measure.\n\n"
+                        "**Benefits of PKCE for Confidential Clients:**\n"
+                        "1. Additional protection against authorization code interception\n"
+                        "2. Defense if client secret is compromised or leaked\n"
+                        "3. Protection in misconfigured environments\n"
+                        "4. Aligns with OAuth 2.1 best practices\n\n"
+                        "PKCE provides layered security even when client secrets are used, "
+                        "protecting against authorization code interception in compromised "
+                        "environments or misconfigurations.\n\n"
+                        "**Impact (Medium):** Reduced defense-in-depth, potential vulnerability "
+                        "if client secret is compromised or environment is misconfigured."
                     ),
                     remediation=(
                         f"Enable PKCE for confidential client '{client.clientId}':\n\n"

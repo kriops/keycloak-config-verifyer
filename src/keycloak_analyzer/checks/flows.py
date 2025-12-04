@@ -1,9 +1,8 @@
 """OAuth flow security checks."""
 
-from typing import List
 
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -26,7 +25,7 @@ class ImplicitFlowEnabledCheck(SecurityCheck):
         "Proofpoint Research 2023 - OAuth Phishing Attacks",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if client.implicitFlowEnabled:
@@ -117,7 +116,7 @@ class PasswordGrantEnabledCheck(SecurityCheck):
         "OWASP OAuth Cheat Sheet",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if client.directAccessGrantsEnabled:

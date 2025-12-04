@@ -1,9 +1,8 @@
 """Transport security checks."""
 
-from typing import List
 
+from ..models import Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -23,7 +22,7 @@ class SSLNotRequiredCheck(SecurityCheck):
         "RFC 6749 Section 3.1 - TLS Required",
     ]
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if realm.ssl_disabled:
@@ -113,7 +112,7 @@ class SSLExternalOnlyCheck(SecurityCheck):
         "RFC 9700 - Transport Security Best Practices",
     ]
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if realm.sslRequired == "external":

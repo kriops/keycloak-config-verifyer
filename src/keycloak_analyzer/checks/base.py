@@ -1,10 +1,10 @@
 """Base classes and registry for security checks."""
 
-from abc import ABC, abstractmethod
-from typing import List, Optional, Dict, Any, Type
 import logging
+from abc import ABC
+from typing import Any, Optional
 
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 
 logger = logging.getLogger(__name__)
 
@@ -25,9 +25,9 @@ class SecurityCheck(ABC):
     check_name: str = ""  # e.g., "PKCE Not Enforced"
     category: FindingCategory = FindingCategory.MISC
     default_severity: Severity = Severity.MEDIUM
-    references: List[str] = []  # RFC/CVE references
+    references: list[str] = []  # RFC/CVE references
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         """
         Check realm-level configuration.
 
@@ -39,7 +39,7 @@ class SecurityCheck(ABC):
         """
         return []
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         """
         Check individual client configuration.
 
@@ -60,7 +60,7 @@ class SecurityCheck(ABC):
         realm: RealmConfig,
         client: Optional[ClientConfig] = None,
         severity: Optional[Severity] = None,
-        evidence: Optional[Dict[str, Any]] = None,
+        evidence: Optional[dict[str, Any]] = None,
     ) -> Finding:
         """
         Helper to create consistent findings.
@@ -104,10 +104,10 @@ class CheckRegistry:
     Checks register themselves using the @security_check decorator.
     """
 
-    _checks: List[Type[SecurityCheck]] = []
+    _checks: list[type[SecurityCheck]] = []
 
     @classmethod
-    def register(cls, check_class: Type[SecurityCheck]) -> Type[SecurityCheck]:
+    def register(cls, check_class: type[SecurityCheck]) -> type[SecurityCheck]:
         """
         Register a check class.
 
@@ -126,7 +126,7 @@ class CheckRegistry:
         return check_class
 
     @classmethod
-    def get_all_checks(cls) -> List[SecurityCheck]:
+    def get_all_checks(cls) -> list[SecurityCheck]:
         """
         Get instances of all registered checks.
 
@@ -152,7 +152,7 @@ class CheckRegistry:
         return None
 
     @classmethod
-    def get_checks_by_category(cls, category: FindingCategory) -> List[SecurityCheck]:
+    def get_checks_by_category(cls, category: FindingCategory) -> list[SecurityCheck]:
         """
         Get all checks for a specific category.
 
@@ -169,7 +169,7 @@ class CheckRegistry:
         ]
 
     @classmethod
-    def get_checks_by_severity(cls, severity: Severity) -> List[SecurityCheck]:
+    def get_checks_by_severity(cls, severity: Severity) -> list[SecurityCheck]:
         """
         Get all checks with a specific default severity.
 
@@ -202,7 +202,7 @@ class CheckRegistry:
         logger.debug("Cleared check registry")
 
     @classmethod
-    def list_all(cls) -> List[Dict[str, Any]]:
+    def list_all(cls) -> list[dict[str, Any]]:
         """
         Get metadata for all registered checks.
 
@@ -221,7 +221,7 @@ class CheckRegistry:
         ]
 
 
-def security_check(cls: Type[SecurityCheck]) -> Type[SecurityCheck]:
+def security_check(cls: type[SecurityCheck]) -> type[SecurityCheck]:
     """
     Decorator to register a security check.
 

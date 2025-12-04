@@ -1,8 +1,8 @@
 """Core functionality for Keycloak analyzer."""
 
+from .analyzer import AnalysisResult, SecurityAnalyzer
 from .discovery import RealmDiscovery
 from .loader import RealmLoader, RealmLoadError
-from .analyzer import SecurityAnalyzer, AnalysisResult
 
 __all__ = [
     "RealmDiscovery",

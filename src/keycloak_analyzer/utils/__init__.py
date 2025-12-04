@@ -1,11 +1,11 @@
 """Utility modules."""
 
 from .grouping import (
-    group_by_severity,
-    group_by_realm,
-    group_by_client,
-    filter_client_level_findings,
     count_findings_in_nested_groups,
+    filter_client_level_findings,
+    group_by_client,
+    group_by_realm,
+    group_by_severity,
 )
 
 __all__ = [

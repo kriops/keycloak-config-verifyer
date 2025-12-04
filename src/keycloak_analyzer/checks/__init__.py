@@ -1,15 +1,9 @@
 """Security checks for Keycloak configurations."""
 
 # Import all check modules to register them
-from . import pkce
-from . import flows
-from . import redirect_uri
-from . import transport
-from . import token_security
-from . import client_auth
-from . import misc
-
-from .base import SecurityCheck, CheckRegistry, security_check
+# ruff: noqa: F401 - These imports are used for side effects (registering checks)
+from . import client_auth, flows, misc, pkce, redirect_uri, token_security, transport
+from .base import CheckRegistry, SecurityCheck, security_check
 
 __all__ = [
     "SecurityCheck",

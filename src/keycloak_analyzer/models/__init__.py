@@ -1,7 +1,7 @@
 """Keycloak analyzer data models."""
 
-from .finding import Finding, Severity, FindingCategory
 from .client import ClientConfig
+from .finding import Finding, FindingCategory, Severity
 from .realm import RealmConfig
 
 __all__ = [

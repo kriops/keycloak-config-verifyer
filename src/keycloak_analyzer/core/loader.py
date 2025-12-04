@@ -3,7 +3,8 @@
 import json
 import logging
 from pathlib import Path
-from typing import List, Union, Dict, Any
+from typing import Any, Union
+
 from pydantic import ValidationError
 
 from ..models import RealmConfig
@@ -20,7 +21,7 @@ class RealmLoadError(Exception):
 class RealmLoader:
     """Loads and parses Keycloak realm export files."""
 
-    def load(self, file_path: Path) -> List[RealmConfig]:
+    def load(self, file_path: Path) -> list[RealmConfig]:
         """
         Load realm configuration(s) from a JSON file.
 
@@ -41,7 +42,7 @@ class RealmLoader:
 
         try:
             # Read the JSON file
-            with open(file_path, "r", encoding="utf-8") as f:
+            with open(file_path, encoding="utf-8") as f:
                 data = json.load(f)
 
         except FileNotFoundError:
@@ -62,8 +63,8 @@ class RealmLoader:
         return realms
 
     def _parse_realm_data(
-        self, data: Union[Dict[str, Any], List[Dict[str, Any]]], file_path: Path
-    ) -> List[RealmConfig]:
+        self, data: Union[dict[str, Any], list[dict[str, Any]]], file_path: Path
+    ) -> list[RealmConfig]:
         """
         Parse JSON data into RealmConfig objects.
 
@@ -78,7 +79,7 @@ class RealmLoader:
             ValidationError: If Pydantic validation fails.
             ValueError: If data format is invalid.
         """
-        realms: List[RealmConfig] = []
+        realms: list[RealmConfig] = []
 
         # Determine if it's single-realm or multi-realm format
         if isinstance(data, dict):
@@ -118,7 +119,7 @@ class RealmLoader:
         return realms
 
     def _create_realm_config(
-        self, data: Dict[str, Any], file_path: Path
+        self, data: dict[str, Any], file_path: Path
     ) -> RealmConfig:
         """
         Create a RealmConfig from dictionary data.
@@ -146,7 +147,7 @@ class RealmLoader:
 
         return realm
 
-    def load_multiple(self, file_paths: List[Path]) -> List[RealmConfig]:
+    def load_multiple(self, file_paths: list[Path]) -> list[RealmConfig]:
         """
         Load realm configurations from multiple files.
 
@@ -159,7 +160,7 @@ class RealmLoader:
         Note:
             Files that fail to load are logged but don't stop processing.
         """
-        all_realms: List[RealmConfig] = []
+        all_realms: list[RealmConfig] = []
 
         for file_path in file_paths:
             try:

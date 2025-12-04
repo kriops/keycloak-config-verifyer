@@ -1,15 +1,15 @@
 """CLI interface for Keycloak analyzer."""
 
-import sys
 import logging
+import sys
 from pathlib import Path
 from typing import Optional
 
 import click
 
 from .core import RealmDiscovery, RealmLoader, RealmLoadError, SecurityAnalyzer
-from .reports import ConsoleReporter, JSONReporter, HTMLReporter, ReportSummary
 from .models import Severity
+from .reports import ConsoleReporter, HTMLReporter, JSONReporter, ReportSummary
 
 # Configure logging
 logging.basicConfig(

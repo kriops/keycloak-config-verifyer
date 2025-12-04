@@ -9,10 +9,10 @@ __version__ = "0.1.0"
 __author__ = "Kristoffer Opsahl"
 __license__ = "MIT"
 
-from .core import RealmDiscovery, RealmLoader, SecurityAnalyzer, AnalysisResult
-from .models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 from .checks import CheckRegistry, SecurityCheck
-from .reports import ConsoleReporter, JSONReporter, HTMLReporter, ReportSummary
+from .core import AnalysisResult, RealmDiscovery, RealmLoader, SecurityAnalyzer
+from .models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
+from .reports import ConsoleReporter, HTMLReporter, JSONReporter, ReportSummary
 
 __all__ = [
     # Version

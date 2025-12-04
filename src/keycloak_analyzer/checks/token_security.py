@@ -1,9 +1,8 @@
 """Token security checks."""
 
-from typing import List
 
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -27,7 +26,7 @@ class ExcessiveTokenLifespanCheck(SecurityCheck):
     # Threshold: tokens over 15 minutes (900 seconds) are excessive
     MAX_RECOMMENDED_LIFESPAN = 900
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if realm.accessTokenLifespan > self.MAX_RECOMMENDED_LIFESPAN:
@@ -123,7 +122,7 @@ class RefreshTokenReuseCheck(SecurityCheck):
         "OAuth 2.1 - Refresh Token Protection",
     ]
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if not realm.refresh_token_rotation_enabled:
@@ -230,7 +229,7 @@ class FullScopeAllowedCheck(SecurityCheck):
         "Principle of Least Privilege",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if client.fullScopeAllowed:
@@ -313,7 +312,7 @@ class BearerTokensNotSenderConstrainedCheck(SecurityCheck):
         "Cloudflare/Okta Breach (November 2023) - Unrotated bearer token",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Check for DPoP or mTLS token binding

@@ -1,10 +1,9 @@
 """Redirect URI validation checks."""
 
-from typing import List
 from urllib.parse import urlparse
 
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -26,7 +25,7 @@ class WildcardRedirectURICheck(SecurityCheck):
         "OAuth 2.0 Redirect URI Validation Falls Short (2023 Research)",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if client.has_wildcard_redirect:
@@ -46,29 +45,29 @@ class WildcardRedirectURICheck(SecurityCheck):
                         f"**Detected Wildcard URIs:**\n"
                         + "\n".join(f"  - {uri}" for uri in wildcard_uris)
                         + "\n\n"
-                        f"**Attack Vectors:**\n\n"
-                        f"1. **Subdomain Takeover:**\n"
-                        f"   - Pattern: https://*.example.com/*\n"
-                        f"   - Attacker registers expired subdomain (e.g., old.example.com)\n"
-                        f"   - Attacker points subdomain to their infrastructure\n"
-                        f"   - Attacker receives authorization codes at https://old.example.com/callback\n\n"
-                        f"2. **Path Traversal:**\n"
-                        f"   - Pattern: https://example.com/*\n"
-                        f"   - Attacker uses: https://example.com/../../attacker.com\n"
-                        f"   - Browser path normalization may redirect to attacker domain\n\n"
-                        f"3. **Open Redirect Exploitation:**\n"
-                        f"   - Attacker finds open redirector on allowed domain\n"
-                        f"   - Crafts: https://example.com/redirect?url=https://attacker.com\n"
-                        f"   - Authorization code forwarded to attacker\n\n"
-                        f"4. **Fragment Reattachment:**\n"
-                        f"   - Browsers automatically reattach URL fragments\n"
-                        f"   - Enables token theft in certain flow configurations\n\n"
-                        f"**Real-World Exploits:**\n"
-                        f"- CVE-2023-6927: Keycloak wildcard patterns with prefix matching bypass\n"
-                        f"- 2023 Research: GitHub and NAVER redirect URI vulnerabilities\n"
-                        f"- Attackers stole authorization codes from major identity providers\n\n"
-                        f"**RFC 9700 Requirement:** Authorization servers MUST use exact string "
-                        f"matching (RFC 3986 Section 6.2.1). No wildcards, no pattern matching."
+                        "**Attack Vectors:**\n\n"
+                        "1. **Subdomain Takeover:**\n"
+                        "   - Pattern: https://*.example.com/*\n"
+                        "   - Attacker registers expired subdomain (e.g., old.example.com)\n"
+                        "   - Attacker points subdomain to their infrastructure\n"
+                        "   - Attacker receives authorization codes at https://old.example.com/callback\n\n"
+                        "2. **Path Traversal:**\n"
+                        "   - Pattern: https://example.com/*\n"
+                        "   - Attacker uses: https://example.com/../../attacker.com\n"
+                        "   - Browser path normalization may redirect to attacker domain\n\n"
+                        "3. **Open Redirect Exploitation:**\n"
+                        "   - Attacker finds open redirector on allowed domain\n"
+                        "   - Crafts: https://example.com/redirect?url=https://attacker.com\n"
+                        "   - Authorization code forwarded to attacker\n\n"
+                        "4. **Fragment Reattachment:**\n"
+                        "   - Browsers automatically reattach URL fragments\n"
+                        "   - Enables token theft in certain flow configurations\n\n"
+                        "**Real-World Exploits:**\n"
+                        "- CVE-2023-6927: Keycloak wildcard patterns with prefix matching bypass\n"
+                        "- 2023 Research: GitHub and NAVER redirect URI vulnerabilities\n"
+                        "- Attackers stole authorization codes from major identity providers\n\n"
+                        "**RFC 9700 Requirement:** Authorization servers MUST use exact string "
+                        "matching (RFC 3986 Section 6.2.1). No wildcards, no pattern matching."
                     ),
                     remediation=(
                         f"Replace wildcard redirect URIs with explicit, exact URIs:\n\n"
@@ -127,16 +126,16 @@ class WildcardRedirectURICheck(SecurityCheck):
                         f"**Detected Wildcard Origins:**\n"
                         + "\n".join(f"  - {origin}" for origin in wildcard_origins)
                         + "\n\n"
-                        f"**Security Impact:**\n"
-                        f"- Wildcard '*' allows ALL origins (complete CORS bypass)\n"
-                        f"- Wildcard '+' allows all Keycloak clients (overly permissive)\n"
-                        f"- Enables cross-site scripting attacks\n"
-                        f"- Allows malicious sites to make authenticated requests\n\n"
-                        f"**Attack Scenario:**\n"
-                        f"1. User visits attacker's website (attacker.com)\n"
-                        f"2. Attacker's JavaScript makes API requests to your service\n"
-                        f"3. Browser includes user's authentication cookies/tokens\n"
-                        f"4. Attacker gains access to user's data"
+                        "**Security Impact:**\n"
+                        "- Wildcard '*' allows ALL origins (complete CORS bypass)\n"
+                        "- Wildcard '+' allows all Keycloak clients (overly permissive)\n"
+                        "- Enables cross-site scripting attacks\n"
+                        "- Allows malicious sites to make authenticated requests\n\n"
+                        "**Attack Scenario:**\n"
+                        "1. User visits attacker's website (attacker.com)\n"
+                        "2. Attacker's JavaScript makes API requests to your service\n"
+                        "3. Browser includes user's authentication cookies/tokens\n"
+                        "4. Attacker gains access to user's data"
                     ),
                     remediation=(
                         f"Replace wildcard web origins with explicit domains:\n\n"
@@ -182,7 +181,7 @@ class HTTPRedirectURICheck(SecurityCheck):
         "RFC 9700 Transport Security",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if client.has_http_redirect:
@@ -205,23 +204,23 @@ class HTTPRedirectURICheck(SecurityCheck):
                             f"**Vulnerable URIs:**\n"
                             + "\n".join(f"  - {uri}" for uri in http_uris)
                             + "\n\n"
-                            f"**Attack Vectors:**\n\n"
-                            f"1. **Network Eavesdropping:**\n"
-                            f"   - Authorization codes transmitted in cleartext\n"
-                            f"   - Attackers on network (WiFi, ISP, etc.) can intercept codes\n"
-                            f"   - Man-in-the-middle (MitM) attacks\n\n"
-                            f"2. **Code Interception:**\n"
-                            f"   - Attacker intercepts: http://app.example.com/callback?code=AUTH_CODE\n"
-                            f"   - Attacker exchanges code for access token\n"
-                            f"   - Account takeover\n\n"
-                            f"3. **DNS Hijacking:**\n"
-                            f"   - HTTP connections don't verify server identity\n"
-                            f"   - Attacker redirects DNS to malicious server\n"
-                            f"   - Captures authorization codes\n\n"
-                            f"**RFC 8252 Requirement:** Authorization servers MUST NOT allow "
-                            f"http:// redirect URIs except localhost for native apps.\n\n"
-                            f"**Note:** http://localhost and http://127.0.0.1 are permitted "
-                            f"for native app development."
+                            "**Attack Vectors:**\n\n"
+                            "1. **Network Eavesdropping:**\n"
+                            "   - Authorization codes transmitted in cleartext\n"
+                            "   - Attackers on network (WiFi, ISP, etc.) can intercept codes\n"
+                            "   - Man-in-the-middle (MitM) attacks\n\n"
+                            "2. **Code Interception:**\n"
+                            "   - Attacker intercepts: http://app.example.com/callback?code=AUTH_CODE\n"
+                            "   - Attacker exchanges code for access token\n"
+                            "   - Account takeover\n\n"
+                            "3. **DNS Hijacking:**\n"
+                            "   - HTTP connections don't verify server identity\n"
+                            "   - Attacker redirects DNS to malicious server\n"
+                            "   - Captures authorization codes\n\n"
+                            "**RFC 8252 Requirement:** Authorization servers MUST NOT allow "
+                            "http:// redirect URIs except localhost for native apps.\n\n"
+                            "**Note:** http://localhost and http://127.0.0.1 are permitted "
+                            "for native app development."
                         ),
                         remediation=(
                             f"Migrate HTTP redirect URIs to HTTPS:\n\n"
@@ -288,7 +287,7 @@ class LocalhostInProductionCheck(SecurityCheck):
         "OAuth 2.0 Security Best Practices",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Check for localhost/127.0.0.1 in redirect URIs
@@ -308,25 +307,25 @@ class LocalhostInProductionCheck(SecurityCheck):
                         f"**Detected Localhost URIs:**\n"
                         + "\n".join(f"  - {uri}" for uri in localhost_uris)
                         + "\n\n"
-                        f"**Security Risks:**\n\n"
-                        f"1. **Local Session Hijacking:**\n"
-                        f"   - Malware on user's machine can intercept localhost callbacks\n"
-                        f"   - Authorization codes delivered to http://localhost:* are accessible to any local process\n"
-                        f"   - No same-origin policy protection for localhost\n\n"
-                        f"2. **Production Configuration Leak:**\n"
-                        f"   - Development URIs in production indicate configuration management issues\n"
-                        f"   - May expose test/debug endpoints\n"
-                        f"   - Increases attack surface\n\n"
-                        f"3. **User Confusion:**\n"
-                        f"   - Production users see localhost URIs (broken auth flow)\n"
-                        f"   - Poor user experience\n\n"
-                        f"**Attack Scenario:**\n"
-                        f"1. User authenticates via OAuth flow\n"
-                        f"2. Attacker's malware listens on localhost port\n"
-                        f"3. Authorization code delivered to malicious localhost listener\n"
-                        f"4. Attacker exchanges code for access token\n\n"
-                        f"**Note:** Localhost URIs are acceptable for native apps during development "
-                        f"but MUST NOT be present in production Keycloak configurations."
+                        "**Security Risks:**\n\n"
+                        "1. **Local Session Hijacking:**\n"
+                        "   - Malware on user's machine can intercept localhost callbacks\n"
+                        "   - Authorization codes delivered to http://localhost:* are accessible to any local process\n"
+                        "   - No same-origin policy protection for localhost\n\n"
+                        "2. **Production Configuration Leak:**\n"
+                        "   - Development URIs in production indicate configuration management issues\n"
+                        "   - May expose test/debug endpoints\n"
+                        "   - Increases attack surface\n\n"
+                        "3. **User Confusion:**\n"
+                        "   - Production users see localhost URIs (broken auth flow)\n"
+                        "   - Poor user experience\n\n"
+                        "**Attack Scenario:**\n"
+                        "1. User authenticates via OAuth flow\n"
+                        "2. Attacker's malware listens on localhost port\n"
+                        "3. Authorization code delivered to malicious localhost listener\n"
+                        "4. Attacker exchanges code for access token\n\n"
+                        "**Note:** Localhost URIs are acceptable for native apps during development "
+                        "but MUST NOT be present in production Keycloak configurations."
                     ),
                     remediation=(
                         f"Remove localhost redirect URIs from production configuration:\n\n"
@@ -342,22 +341,22 @@ class LocalhostInProductionCheck(SecurityCheck):
                         f"   - **Remove all localhost URIs:**\n"
                         + "\n".join(f"     ❌ {uri}" for uri in localhost_uris)
                         + "\n"
-                        f"   - **Add production URIs:**\n"
-                        f"     ✓ https://app.example.com/callback\n"
-                        f"5. Click 'Save'\n\n"
-                        f"**Step 3: Separate Development Configuration**\n"
-                        f"Create separate Keycloak clients for development:\n"
-                        f"  - Client: 'my-app-prod' → Production URIs only\n"
-                        f"  - Client: 'my-app-dev' → Localhost URIs for dev\n\n"
-                        f"**Step 4: Configuration Management**\n"
-                        f"Use environment-specific configuration:\n"
-                        f"```javascript\n"
-                        f"const redirectUri = process.env.NODE_ENV === 'production'\n"
-                        f"  ? 'https://app.example.com/callback'\n"
-                        f"  : 'http://localhost:3000/callback';\n"
-                        f"```\n\n"
-                        f"**Best Practice:** Never use the same Keycloak client for both "
-                        f"development and production."
+                        "   - **Add production URIs:**\n"
+                        "     ✓ https://app.example.com/callback\n"
+                        "5. Click 'Save'\n\n"
+                        "**Step 3: Separate Development Configuration**\n"
+                        "Create separate Keycloak clients for development:\n"
+                        "  - Client: 'my-app-prod' → Production URIs only\n"
+                        "  - Client: 'my-app-dev' → Localhost URIs for dev\n\n"
+                        "**Step 4: Configuration Management**\n"
+                        "Use environment-specific configuration:\n"
+                        "```javascript\n"
+                        "const redirectUri = process.env.NODE_ENV === 'production'\n"
+                        "  ? 'https://app.example.com/callback'\n"
+                        "  : 'http://localhost:3000/callback';\n"
+                        "```\n\n"
+                        "**Best Practice:** Never use the same Keycloak client for both "
+                        "development and production."
                     ),
                     realm=realm,
                     client=client,
@@ -390,7 +389,7 @@ class PathTraversalRedirectURICheck(SecurityCheck):
         "Parser Differential Attacks",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Patterns that indicate potential path traversal or parser confusion
@@ -470,27 +469,27 @@ class PathTraversalRedirectURICheck(SecurityCheck):
                             for uri, pattern, desc in suspicious_uris
                         )
                         + "\n\n"
-                        f"**Attack Vectors:**\n\n"
-                        f"1. **Parser Differential Attacks:**\n"
-                        f"   - Different parsers interpret URLs differently\n"
-                        f"   - Example: `https://good.com/../attacker.com`\n"
-                        f"   - Validator sees good.com, browser goes to attacker.com\n\n"
-                        f"2. **URL Encoding Bypasses:**\n"
-                        f"   - `%2e%2e` decodes to `..`\n"
-                        f"   - Validation checks literal string, browser normalizes\n"
-                        f"   - Bypass: `https://good.com/%2e%2e/attacker.com`\n\n"
-                        f"3. **@ Symbol Confusion:**\n"
-                        f"   - `https://good.com@attacker.com` → attacker.com\n"
-                        f"   - Parser sees 'good.com' as username, ignores it\n"
-                        f"   - Browser connects to attacker.com\n\n"
-                        f"4. **Protocol-Relative URLs:**\n"
-                        f"   - `//attacker.com/callback`\n"
-                        f"   - Inherits protocol from current page\n"
-                        f"   - May bypass origin checks\n\n"
-                        f"**Real-World Impact:**\n"
-                        f"- 2023 Security Research: GitHub and NAVER vulnerable to parser differentials\n"
-                        f"- Authorization code theft via redirect URI manipulation\n"
-                        f"- Account takeover attacks"
+                        "**Attack Vectors:**\n\n"
+                        "1. **Parser Differential Attacks:**\n"
+                        "   - Different parsers interpret URLs differently\n"
+                        "   - Example: `https://good.com/../attacker.com`\n"
+                        "   - Validator sees good.com, browser goes to attacker.com\n\n"
+                        "2. **URL Encoding Bypasses:**\n"
+                        "   - `%2e%2e` decodes to `..`\n"
+                        "   - Validation checks literal string, browser normalizes\n"
+                        "   - Bypass: `https://good.com/%2e%2e/attacker.com`\n\n"
+                        "3. **@ Symbol Confusion:**\n"
+                        "   - `https://good.com@attacker.com` → attacker.com\n"
+                        "   - Parser sees 'good.com' as username, ignores it\n"
+                        "   - Browser connects to attacker.com\n\n"
+                        "4. **Protocol-Relative URLs:**\n"
+                        "   - `//attacker.com/callback`\n"
+                        "   - Inherits protocol from current page\n"
+                        "   - May bypass origin checks\n\n"
+                        "**Real-World Impact:**\n"
+                        "- 2023 Security Research: GitHub and NAVER vulnerable to parser differentials\n"
+                        "- Authorization code theft via redirect URI manipulation\n"
+                        "- Account takeover attacks"
                     ),
                     remediation=(
                         f"Remove redirect URIs with path traversal patterns:\n\n"
@@ -501,29 +500,29 @@ class PathTraversalRedirectURICheck(SecurityCheck):
                         f"4. In 'Valid Redirect URIs', remove:\n"
                         + "\n".join(f"   ❌ {uri}" for uri, _, _ in suspicious_uris)
                         + "\n\n"
-                        f"**Step 2: Use Only Clean, Absolute URIs**\n"
-                        f"✓ **GOOD:** Absolute URIs with explicit protocol:\n"
-                        f"  - https://app.example.com/callback\n"
-                        f"  - https://staging.example.com/auth/callback\n\n"
-                        f"❌ **BAD:** URIs with special characters or encoding:\n"
-                        f"  - https://app.example.com/../callback\n"
-                        f"  - https://good.com@attacker.com\n"
-                        f"  - //example.com/callback\n"
-                        f"  - https://app.example.com/%2e%2e/callback\n\n"
-                        f"**Step 3: Validation Rules**\n"
-                        f"Ensure redirect URIs:\n"
-                        f"  - Start with https:// (or http://localhost for dev)\n"
-                        f"  - Contain no /../, ./, //, @, or URL encoding\n"
-                        f"  - Use only alphanumeric, hyphen, dot, slash, colon\n"
-                        f"  - Are fully normalized (no path simplification needed)\n\n"
-                        f"**Step 4: Test Validation**\n"
-                        f"Verify these malicious URIs are REJECTED:\n"
-                        f"  - https://app.example.com/../attacker.com\n"
-                        f"  - https://good.com@attacker.com\n"
-                        f"  - //attacker.com/callback\n"
-                        f"  - https://app.example.com/%252e%252e/callback\n\n"
-                        f"**RFC 9700 Requirement:** Use exact string matching with no "
-                        f"normalization or encoding."
+                        "**Step 2: Use Only Clean, Absolute URIs**\n"
+                        "✓ **GOOD:** Absolute URIs with explicit protocol:\n"
+                        "  - https://app.example.com/callback\n"
+                        "  - https://staging.example.com/auth/callback\n\n"
+                        "❌ **BAD:** URIs with special characters or encoding:\n"
+                        "  - https://app.example.com/../callback\n"
+                        "  - https://good.com@attacker.com\n"
+                        "  - //example.com/callback\n"
+                        "  - https://app.example.com/%2e%2e/callback\n\n"
+                        "**Step 3: Validation Rules**\n"
+                        "Ensure redirect URIs:\n"
+                        "  - Start with https:// (or http://localhost for dev)\n"
+                        "  - Contain no /../, ./, //, @, or URL encoding\n"
+                        "  - Use only alphanumeric, hyphen, dot, slash, colon\n"
+                        "  - Are fully normalized (no path simplification needed)\n\n"
+                        "**Step 4: Test Validation**\n"
+                        "Verify these malicious URIs are REJECTED:\n"
+                        "  - https://app.example.com/../attacker.com\n"
+                        "  - https://good.com@attacker.com\n"
+                        "  - //attacker.com/callback\n"
+                        "  - https://app.example.com/%252e%252e/callback\n\n"
+                        "**RFC 9700 Requirement:** Use exact string matching with no "
+                        "normalization or encoding."
                     ),
                     realm=realm,
                     client=client,
@@ -559,7 +558,7 @@ class DangerousURISchemeCheck(SecurityCheck):
         "CVE-2023-28131 - Expo OAuth URI Scheme Vulnerability",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Dangerous URI schemes that can execute code or access local resources
@@ -594,33 +593,33 @@ class DangerousURISchemeCheck(SecurityCheck):
                             for uri, scheme, desc in dangerous_uris
                         )
                         + "\n\n"
-                        f"**Attack Vectors:**\n\n"
-                        f"1. **javascript: Scheme (XSS):**\n"
-                        f"   - Redirect: `javascript:alert(document.cookie)`\n"
-                        f"   - Browser executes JavaScript in page context\n"
-                        f"   - Attacker steals tokens, cookies, session data\n"
-                        f"   - **Impact:** Full account takeover via XSS\n\n"
-                        f"2. **data: Scheme (XSS):**\n"
-                        f"   - Redirect: `data:text/html,<script>alert(1)</script>`\n"
-                        f"   - Browser renders HTML with JavaScript\n"
-                        f"   - Bypasses Content Security Policy in some browsers\n"
-                        f"   - Can inject malicious content\n\n"
-                        f"3. **file: Scheme (Local File Access):**\n"
-                        f"   - Redirect: `file:///etc/passwd`\n"
-                        f"   - Accesses local file system\n"
-                        f"   - Information disclosure\n"
-                        f"   - May bypass same-origin policy\n\n"
-                        f"4. **vbscript: Scheme (Code Execution - IE):**\n"
-                        f"   - Legacy Internet Explorer\n"
-                        f"   - Executes VBScript code\n"
-                        f"   - Full system compromise possible\n\n"
-                        f"**Real-World Exploits:**\n"
-                        f"- CVE-2023-28131 (CVSS 9.6 Critical): Expo framework allowed custom "
-                        f"URI schemes, leading to credential leakage\n"
-                        f"- XSS attacks via OAuth redirect URI manipulation\n"
-                        f"- Token theft through javascript: scheme injection\n\n"
-                        f"**RFC 9700:** Only https:// (and http://localhost for native apps) "
-                        f"should be allowed in redirect URIs."
+                        "**Attack Vectors:**\n\n"
+                        "1. **javascript: Scheme (XSS):**\n"
+                        "   - Redirect: `javascript:alert(document.cookie)`\n"
+                        "   - Browser executes JavaScript in page context\n"
+                        "   - Attacker steals tokens, cookies, session data\n"
+                        "   - **Impact:** Full account takeover via XSS\n\n"
+                        "2. **data: Scheme (XSS):**\n"
+                        "   - Redirect: `data:text/html,<script>alert(1)</script>`\n"
+                        "   - Browser renders HTML with JavaScript\n"
+                        "   - Bypasses Content Security Policy in some browsers\n"
+                        "   - Can inject malicious content\n\n"
+                        "3. **file: Scheme (Local File Access):**\n"
+                        "   - Redirect: `file:///etc/passwd`\n"
+                        "   - Accesses local file system\n"
+                        "   - Information disclosure\n"
+                        "   - May bypass same-origin policy\n\n"
+                        "4. **vbscript: Scheme (Code Execution - IE):**\n"
+                        "   - Legacy Internet Explorer\n"
+                        "   - Executes VBScript code\n"
+                        "   - Full system compromise possible\n\n"
+                        "**Real-World Exploits:**\n"
+                        "- CVE-2023-28131 (CVSS 9.6 Critical): Expo framework allowed custom "
+                        "URI schemes, leading to credential leakage\n"
+                        "- XSS attacks via OAuth redirect URI manipulation\n"
+                        "- Token theft through javascript: scheme injection\n\n"
+                        "**RFC 9700:** Only https:// (and http://localhost for native apps) "
+                        "should be allowed in redirect URIs."
                     ),
                     remediation=(
                         f"Remove all dangerous URI schemes from redirect URIs:\n\n"
@@ -631,34 +630,34 @@ class DangerousURISchemeCheck(SecurityCheck):
                         f"4. In 'Valid Redirect URIs', **IMMEDIATELY REMOVE:**\n"
                         + "\n".join(f"   🚨 {uri}" for uri, _, _ in dangerous_uris)
                         + "\n"
-                        f"5. Click 'Save'\n\n"
-                        f"**Step 2: Use Only Safe URI Schemes**\n"
-                        f"✓ **ALLOWED Schemes:**\n"
-                        f"  - https:// - Secure HTTP (production)\n"
-                        f"  - http://localhost - Local development only\n"
-                        f"  - http://127.0.0.1 - Local development only\n"
-                        f"  - Custom schemes for native apps (with extreme caution)\n\n"
-                        f"❌ **FORBIDDEN Schemes:**\n"
-                        f"  - javascript: - Code execution\n"
-                        f"  - data: - Data URI execution\n"
-                        f"  - vbscript: - VBScript execution\n"
-                        f"  - file: - Local file access\n"
-                        f"  - about: - Browser internals\n"
-                        f"  - blob: - Binary data\n\n"
-                        f"**Step 3: Replace with Secure Redirect URIs**\n"
-                        f"Use standard HTTPS URLs:\n"
-                        f"```\n"
-                        f"https://app.example.com/callback\n"
-                        f"https://staging.example.com/auth/callback\n"
-                        f"http://localhost:3000/callback  # Dev only\n"
-                        f"```\n\n"
-                        f"**Step 4: Audit and Test**\n"
-                        f"1. Review all redirect URIs for your application\n"
-                        f"2. Verify only https:// and http://localhost remain\n"
-                        f"3. Test authentication flow end-to-end\n"
-                        f"4. Confirm no XSS or code execution possible\n\n"
-                        f"**Critical:** This is a **severe security vulnerability**. "
-                        f"Fix immediately to prevent code execution attacks."
+                        "5. Click 'Save'\n\n"
+                        "**Step 2: Use Only Safe URI Schemes**\n"
+                        "✓ **ALLOWED Schemes:**\n"
+                        "  - https:// - Secure HTTP (production)\n"
+                        "  - http://localhost - Local development only\n"
+                        "  - http://127.0.0.1 - Local development only\n"
+                        "  - Custom schemes for native apps (with extreme caution)\n\n"
+                        "❌ **FORBIDDEN Schemes:**\n"
+                        "  - javascript: - Code execution\n"
+                        "  - data: - Data URI execution\n"
+                        "  - vbscript: - VBScript execution\n"
+                        "  - file: - Local file access\n"
+                        "  - about: - Browser internals\n"
+                        "  - blob: - Binary data\n\n"
+                        "**Step 3: Replace with Secure Redirect URIs**\n"
+                        "Use standard HTTPS URLs:\n"
+                        "```\n"
+                        "https://app.example.com/callback\n"
+                        "https://staging.example.com/auth/callback\n"
+                        "http://localhost:3000/callback  # Dev only\n"
+                        "```\n\n"
+                        "**Step 4: Audit and Test**\n"
+                        "1. Review all redirect URIs for your application\n"
+                        "2. Verify only https:// and http://localhost remain\n"
+                        "3. Test authentication flow end-to-end\n"
+                        "4. Confirm no XSS or code execution possible\n\n"
+                        "**Critical:** This is a **severe security vulnerability**. "
+                        "Fix immediately to prevent code execution attacks."
                     ),
                     realm=realm,
                     client=client,

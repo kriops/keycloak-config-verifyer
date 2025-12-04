@@ -1,9 +1,8 @@
 """Miscellaneous security checks (Low and Info severity)."""
 
-from typing import List
 
+from ..models import ClientConfig, Finding, FindingCategory, RealmConfig, Severity
 from .base import SecurityCheck, security_check
-from ..models import Finding, Severity, FindingCategory, ClientConfig, RealmConfig
 
 
 @security_check
@@ -23,7 +22,7 @@ class BruteForceProtectionDisabledCheck(SecurityCheck):
         "Keycloak Security Best Practices",
     ]
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         if not realm.bruteForceProtected:
@@ -122,7 +121,7 @@ class ClientSecretsInExportCheck(SecurityCheck):
         "OWASP - Sensitive Data Exposure",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Check if client has a secret exposed in configuration
@@ -223,7 +222,7 @@ class MissingClientDescriptionCheck(SecurityCheck):
         "Keycloak Administration Guide",
     ]
 
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Only report for enabled clients without descriptions
@@ -324,7 +323,7 @@ class ExcessiveImplicitTokenLifespanCheck(SecurityCheck):
     # Implicit flow tokens should be very short (max 15 minutes)
     MAX_IMPLICIT_LIFESPAN = 900
 
-    def check_realm(self, realm: RealmConfig) -> List[Finding]:
+    def check_realm(self, realm: RealmConfig) -> list[Finding]:
         findings = []
 
         # Check if any client has implicit flow enabled
@@ -404,7 +403,7 @@ class ExcessiveImplicitTokenLifespanCheck(SecurityCheck):
         return findings
 
 
-@security_check  
+@security_check
 class ServiceAccountsEnabledCheck(SecurityCheck):
     """Check if service accounts are enabled. Review necessity and audit usage."""
     check_id = "KC-MISC-005"
@@ -412,8 +411,8 @@ class ServiceAccountsEnabledCheck(SecurityCheck):
     category = FindingCategory.MISC
     default_severity = Severity.LOW
     references = ["OAuth 2.0 Client Credentials Grant", "Service Account Best Practices"]
-    
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
         if client.serviceAccountsEnabled:
             findings.append(self.create_finding(
@@ -453,8 +452,8 @@ class NoUserConsentRequiredCheck(SecurityCheck):
     category = FindingCategory.MISC
     default_severity = Severity.LOW
     references = ["OpenID Connect Core - Consent", "OAuth 2.0 User Consent Best Practices"]
-    
-    def check_client(self, client: ClientConfig, realm: RealmConfig) -> List[Finding]:
+
+    def check_client(self, client: ClientConfig, realm: RealmConfig) -> list[Finding]:
         findings = []
         if not client.consentRequired and not client.is_public and client.standardFlowEnabled:
             findings.append(self.create_finding(

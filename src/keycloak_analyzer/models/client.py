@@ -1,7 +1,8 @@
 """Keycloak client configuration models."""
 
+from typing import Any, Optional
+
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict, Any
 
 
 class ClientConfig(BaseModel):
@@ -30,8 +31,8 @@ class ClientConfig(BaseModel):
     # URIs
     rootUrl: Optional[str] = None
     baseUrl: Optional[str] = None
-    redirectUris: List[str] = Field(default_factory=list)
-    webOrigins: List[str] = Field(default_factory=list)
+    redirectUris: list[str] = Field(default_factory=list)
+    webOrigins: list[str] = Field(default_factory=list)
     adminUrl: Optional[str] = None
 
     # Authentication
@@ -40,13 +41,13 @@ class ClientConfig(BaseModel):
     secret: Optional[str] = None  # Client secret (confidential clients)
 
     # Attributes (contains PKCE, token binding, etc.)
-    attributes: Dict[str, str] = Field(default_factory=dict)
+    attributes: dict[str, str] = Field(default_factory=dict)
 
     # Token settings
     fullScopeAllowed: bool = True  # All scopes vs. specific scopes
 
     # Protocol mappers
-    protocolMappers: Optional[List[Dict[str, Any]]] = None
+    protocolMappers: Optional[list[dict[str, Any]]] = None
 
     # Consent settings
     consentRequired: bool = False
@@ -108,7 +109,7 @@ class ClientConfig(BaseModel):
         return False
 
     @property
-    def uses_deprecated_flows(self) -> List[str]:
+    def uses_deprecated_flows(self) -> list[str]:
         """
         Return list of deprecated flows in use.
 

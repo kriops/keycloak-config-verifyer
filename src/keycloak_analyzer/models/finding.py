@@ -1,9 +1,10 @@
 """Security finding models and enums."""
 
-from pydantic import BaseModel, Field
-from enum import Enum
-from typing import Optional, Dict, Any, List
 from datetime import datetime
+from enum import Enum
+from typing import Any, Optional
+
+from pydantic import BaseModel, Field
 
 
 class Severity(str, Enum):
@@ -48,10 +49,10 @@ class Finding(BaseModel):
     remediation: str  # Step-by-step fix instructions
 
     # Supporting information
-    evidence: Dict[str, Any] = Field(default_factory=dict)
+    evidence: dict[str, Any] = Field(default_factory=dict)
     # Evidence contains actual config values that triggered the finding
 
-    references: List[str] = Field(default_factory=list)
+    references: list[str] = Field(default_factory=list)
     # RFC references, CVE numbers, documentation links
 
     # Metadata
@@ -61,7 +62,7 @@ class Finding(BaseModel):
         use_enum_values = False  # Keep enum objects
         json_encoders = {datetime: lambda v: v.isoformat()}
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """
         Convert to dictionary for JSON serialization.
 

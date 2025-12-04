@@ -1,8 +1,7 @@
 """File discovery for Keycloak realm exports."""
 
-from pathlib import Path
-from typing import List
 import logging
+from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
@@ -32,7 +31,7 @@ class RealmDiscovery:
         "htmlcov",
     }
 
-    def discover(self, root_path: Path) -> List[Path]:
+    def discover(self, root_path: Path) -> list[Path]:
         """
         Recursively discover Keycloak realm export files.
 
@@ -51,7 +50,7 @@ class RealmDiscovery:
         if not root_path.is_dir():
             raise ValueError(f"Path is not a directory: {root_path}")
 
-        discovered_files: List[Path] = []
+        discovered_files: list[Path] = []
 
         logger.info(f"Starting realm file discovery in: {root_path}")
 
@@ -96,7 +95,7 @@ class RealmDiscovery:
 
         return False
 
-    def discover_single(self, file_path: Path) -> List[Path]:
+    def discover_single(self, file_path: Path) -> list[Path]:
         """
         Validate and return a single realm export file.
 

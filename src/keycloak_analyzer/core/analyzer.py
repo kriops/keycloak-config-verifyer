@@ -1,11 +1,10 @@
 """Security analyzer orchestration."""
 
 import logging
-from typing import List
 from dataclasses import dataclass
 
-from ..models import RealmConfig, Finding, Severity
 from ..checks import CheckRegistry
+from ..models import Finding, RealmConfig, Severity
 
 logger = logging.getLogger(__name__)
 
@@ -14,33 +13,33 @@ logger = logging.getLogger(__name__)
 class AnalysisResult:
     """Results from security analysis."""
 
-    findings: List[Finding]
+    findings: list[Finding]
     realms_analyzed: int
     clients_analyzed: int
     checks_executed: int
 
     @property
-    def critical_findings(self) -> List[Finding]:
+    def critical_findings(self) -> list[Finding]:
         """Get all critical severity findings."""
         return [f for f in self.findings if f.severity == Severity.CRITICAL]
 
     @property
-    def high_findings(self) -> List[Finding]:
+    def high_findings(self) -> list[Finding]:
         """Get all high severity findings."""
         return [f for f in self.findings if f.severity == Severity.HIGH]
 
     @property
-    def medium_findings(self) -> List[Finding]:
+    def medium_findings(self) -> list[Finding]:
         """Get all medium severity findings."""
         return [f for f in self.findings if f.severity == Severity.MEDIUM]
 
     @property
-    def low_findings(self) -> List[Finding]:
+    def low_findings(self) -> list[Finding]:
         """Get all low severity findings."""
         return [f for f in self.findings if f.severity == Severity.LOW]
 
     @property
-    def info_findings(self) -> List[Finding]:
+    def info_findings(self) -> list[Finding]:
         """Get all info severity findings."""
         return [f for f in self.findings if f.severity == Severity.INFO]
 
@@ -75,7 +74,7 @@ class SecurityAnalyzer:
         self.checks = CheckRegistry.get_all_checks()
         logger.info(f"Initialized analyzer with {len(self.checks)} security checks")
 
-    def analyze(self, realms: List[RealmConfig]) -> AnalysisResult:
+    def analyze(self, realms: list[RealmConfig]) -> AnalysisResult:
         """
         Analyze security of realm configurations.
 
@@ -87,7 +86,7 @@ class SecurityAnalyzer:
         """
         logger.info(f"Starting security analysis of {len(realms)} realm(s)")
 
-        all_findings: List[Finding] = []
+        all_findings: list[Finding] = []
         total_clients = 0
 
         for realm in realms:
@@ -129,7 +128,7 @@ class SecurityAnalyzer:
 
         return result
 
-    def _analyze_realm(self, realm: RealmConfig) -> List[Finding]:
+    def _analyze_realm(self, realm: RealmConfig) -> list[Finding]:
         """
         Run realm-level security checks.
 
@@ -139,7 +138,7 @@ class SecurityAnalyzer:
         Returns:
             List of findings from realm-level checks.
         """
-        findings: List[Finding] = []
+        findings: list[Finding] = []
 
         for check in self.checks:
             try:
@@ -161,7 +160,7 @@ class SecurityAnalyzer:
 
         return findings
 
-    def _analyze_clients(self, realm: RealmConfig) -> List[Finding]:
+    def _analyze_clients(self, realm: RealmConfig) -> list[Finding]:
         """
         Run client-level security checks for all clients in a realm.
 
@@ -171,7 +170,7 @@ class SecurityAnalyzer:
         Returns:
             List of findings from client-level checks.
         """
-        findings: List[Finding] = []
+        findings: list[Finding] = []
 
         for client in realm.clients:
             logger.debug(f"Analyzing client: {client.clientId}")
@@ -206,7 +205,7 @@ class SecurityAnalyzer:
         """
         return len(self.checks)
 
-    def list_checks(self) -> List[dict]:
+    def list_checks(self) -> list[dict]:
         """
         Get metadata for all registered checks.
 

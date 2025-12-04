@@ -55,41 +55,32 @@ met-keycloak-config-verifyer/
 
 ## Running the Analyzer
 
+**Using uv (recommended - auto-detects venv):**
 ```bash
 # Analyze a directory containing realm exports
-keycloak-analyzer ./path/to/realms
+uv run keycloak-analyzer ./path/to/realms
 
 # Generate HTML report
-keycloak-analyzer ./path/to/realms --format html --output report.html
+uv run keycloak-analyzer ./path/to/realms --format html --output report.html
 
 # Generate JSON report
-keycloak-analyzer ./path/to/realms --format json --output report.json
+uv run keycloak-analyzer ./path/to/realms --format json --output report.json
 
 # Test locally (excluded folder is gitignored)
+uv run keycloak-analyzer excluded/
+```
+
+**Or activate venv first:**
+```bash
+source .venv/bin/activate
 keycloak-analyzer excluded/
 ```
 
-## Just Command Runner
-
-The project includes a `justfile` with common commands. Install [just](https://github.com/casey/just):
-
-```bash
-# Install just (if not already installed)
-# macOS/Linux
-brew install just
-# Or: cargo install just
-
-# Show all available commands
-just
-
-# Common commands
-just test              # Run all tests
-just test-cov          # Run tests with coverage
-just quality           # Type check + lint
-just analyze           # Analyze excluded/ folder
-just report-html       # Generate HTML report
-just ci                # Run full CI pipeline locally
-```
+### Why use `uv run`?
+- Automatically finds and uses the virtual environment
+- No need to activate `.venv` manually
+- Consistent across all environments
+- Same tool for package management and execution
 
 ## Grouping Findings
 
@@ -97,64 +88,72 @@ The analyzer supports three grouping modes:
 
 ```bash
 # Group by severity (default) - findings grouped by Critical, High, Medium, Low, Info
-keycloak-analyzer excluded/
+uv run keycloak-analyzer excluded/
 
 # Group by realm - findings organized by realm, then severity within each realm
-keycloak-analyzer excluded/ --group-by realm
+uv run keycloak-analyzer excluded/ --group-by realm
 
 # Group by client - hierarchical: Realm → Client → Findings
-keycloak-analyzer excluded/ --group-by client
+uv run keycloak-analyzer excluded/ --group-by client
 
 # Generate HTML report with client grouping
-keycloak-analyzer excluded/ --format html --output report.html --group-by client
+uv run keycloak-analyzer excluded/ --format html --output report.html --group-by client
 ```
 
 **Note:** When grouping by client, realm-level findings (where `client_id` is None) are excluded from the output. Use `--group-by severity` or `--group-by realm` to see all findings including realm-level issues.
 
 ## Testing
 
-**With Just:**
-```bash
-just test              # Run all tests
-just test-cov          # Run tests with coverage
-just test-file tests/unit/test_checks.py  # Run specific test file
-```
-
-**Direct pytest:**
+**Using uv (recommended):**
 ```bash
 # Run all tests
-pytest
+uv run pytest
 
 # Run with coverage
-pytest --cov
+uv run pytest --cov
 
 # Run specific test file
-pytest tests/unit/test_checks.py
+uv run pytest tests/unit/test_redirect_uri.py
 
 # Run specific test
-pytest tests/unit/test_checks.py::test_pkce_enforcement
+uv run pytest tests/unit/test_checks.py::test_pkce_enforcement
+
+# Run with verbose output
+uv run pytest -v
+```
+
+**Or with venv activated:**
+```bash
+source .venv/bin/activate
+pytest
+pytest --cov
 ```
 
 ## Code Quality Tools
 
-**With Just:**
-```bash
-just quality           # Type check + lint
-just typecheck         # Type checking only
-just lint              # Linting only
-just format            # Format code
-```
-
-**Direct commands:**
+**Using uv (recommended):**
 ```bash
 # Type checking
-mypy src/
+uv run mypy src/
 
 # Linting
-ruff check src/
+uv run ruff check src/
+
+# Auto-fix linting issues
+uv run ruff check --fix src/
 
 # Code formatting
-black src/ tests/
+uv run black src/ tests/
+
+# Check formatting without changes
+uv run black --check src/ tests/
+```
+
+**Run all quality checks:**
+```bash
+uv run mypy src/
+uv run ruff check src/
+uv run black --check src/ tests/
 ```
 
 ## Adding New Security Checks
@@ -206,10 +205,10 @@ When modifying checks, ensure they align with these standards.
 # 2. Add test fixture in tests/fixtures/ if needed
 # 3. Write unit test in tests/unit/
 # 4. Run specific test
-pytest tests/unit/test_new_check.py -v
+uv run pytest tests/unit/test_new_check.py -v
 
 # 5. Test against real realm export
-keycloak-analyzer excluded/
+uv run keycloak-analyzer excluded/
 ```
 
 ### Debugging Output
@@ -217,7 +216,7 @@ keycloak-analyzer excluded/
 ```bash
 # Enable debug logging (if implemented)
 export LOG_LEVEL=DEBUG
-keycloak-analyzer ./realms
+uv run keycloak-analyzer ./realms
 
 # Use Rich console for debugging
 from rich.console import Console
@@ -243,7 +242,7 @@ git add .
 git commit -m "Add KC-NEW-001: Description of check"
 
 # Run tests before pushing
-pytest
+uv run pytest
 
 # Push and create PR
 git push origin feature/new-security-check
@@ -293,13 +292,13 @@ uv pip install -e ".[dev]"
 ### Test failures
 ```bash
 # Clear pytest cache
-pytest --cache-clear
+uv run pytest --cache-clear
 
 # Run with verbose output
-pytest -vv
+uv run pytest -vv
 
 # Run single test for debugging
-pytest tests/path/to/test.py::test_name -vv
+uv run pytest tests/path/to/test.py::test_name -vv
 ```
 
 ## Additional Resources

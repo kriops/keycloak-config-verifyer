@@ -24,7 +24,6 @@ Complete documentation for the Keycloak Configuration Security Analyzer.
 
 | Document | Description | When to Read |
 |----------|-------------|--------------|
-| [Just Commands](../JUSTFILE-QUICKSTART.md) | Quick reference for `just` shortcuts | Development workflow |
 | [Security Policy](security.md) | Reporting vulnerabilities, best practices | Security concerns |
 
 ## Developer Documentation
@@ -36,7 +35,6 @@ Complete documentation for the Keycloak Configuration Security Analyzer.
 | [AGENTS.md](../AGENTS.md) | Development guide for humans and AI agents | Before contributing |
 | [CLAUDE.md](../CLAUDE.md) | Quick reference for AI coding assistants | AI agent setup |
 | [Adding Checks](adding-checks.md) | Guide to implementing new security checks | Adding features |
-| [Just Reference](justfile-reference.md) | Complete justfile command documentation | Build automation |
 
 ## Security Standards
 
@@ -74,9 +72,6 @@ This tool enforces security based on:
 **...report a security issue**
 → See [Security Policy](security.md)
 
-**...use just commands**
-→ See [Just Quickstart](../JUSTFILE-QUICKSTART.md)
-
 ## Documentation by Audience
 
 ### 👤 End Users (Security Auditors)
@@ -90,8 +85,7 @@ This tool enforces security based on:
 
 1. [AGENTS.md](../AGENTS.md)
 2. [Adding Checks](adding-checks.md)
-3. [Just Reference](justfile-reference.md)
-4. [Security Policy](security.md)
+3. [Security Policy](security.md)
 
 ### 🤖 AI Coding Assistants
 
@@ -103,7 +97,6 @@ This tool enforces security based on:
 
 1. [Usage Guide - CI/CD Integration](usage-guide.md#cicd-integration)
 2. [Report Formats - JSON](reports.md#json-output)
-3. [Just Commands](../JUSTFILE-QUICKSTART.md)
 
 ## File Organization
 
@@ -112,8 +105,6 @@ met-keycloak-config-verifyer/
 ├── README.md                      # Quick start for new users
 ├── CLAUDE.md                      # AI agent quick reference
 ├── AGENTS.md                      # Comprehensive development guide
-├── JUSTFILE-QUICKSTART.md         # Just command quick reference
-├── justfile                       # Just command definitions
 │
 ├── docs/
 │   ├── README.md                  # This file (documentation index)
@@ -121,8 +112,7 @@ met-keycloak-config-verifyer/
 │   ├── check-reference.md         # All security checks documented
 │   ├── reports.md                 # Report format specifications
 │   ├── security.md                # Security policy and reporting
-│   ├── adding-checks.md           # Guide for adding new checks
-│   └── justfile-reference.md      # Complete just command reference
+│   └── adding-checks.md           # Guide for adding new checks
 │
 ├── src/keycloak_analyzer/         # Source code
 │   ├── checks/                    # Security check implementations

@@ -14,21 +14,25 @@ Scan your Keycloak exports and identify security misconfigurations before they b
 # Clone and install
 git clone https://github.com/kriops/keycloak-config-verifyer.git
 cd keycloak-config-verifyer
-uv venv && source .venv/bin/activate
+uv venv
 uv pip install -e ".[dev]"
 ```
 
 ### 2. Run Analysis
 
 ```bash
-# Analyze your realm exports
+# Analyze your realm exports (uv automatically uses the venv)
+uv run keycloak-analyzer ./path/to/keycloak-configs
+
+# Or activate venv and run directly
+source .venv/bin/activate  # Linux/Mac
 keycloak-analyzer ./path/to/keycloak-configs
 
 # Generate HTML report
-keycloak-analyzer ./path/to/keycloak-configs --format html --output report.html
+uv run keycloak-analyzer ./path/to/keycloak-configs --format html --output report.html
 
 # CI/CD integration (JSON output)
-keycloak-analyzer ./path/to/keycloak-configs --format json --output report.json --quiet
+uv run keycloak-analyzer ./path/to/keycloak-configs --format json --output report.json --quiet
 ```
 
 ### 3. Review Results
@@ -65,23 +69,36 @@ Open `report.html` in your browser or review the color-coded console output.
 
 **Security Audit:**
 ```bash
-keycloak-analyzer ./configs --format html --output security-audit.html
+uv run keycloak-analyzer ./configs --format html --output security-audit.html
 ```
 
 **Show Only Critical Issues:**
 ```bash
-keycloak-analyzer ./configs --severity critical
+uv run keycloak-analyzer ./configs --severity critical
 ```
 
 **Group by Client:**
 ```bash
-keycloak-analyzer ./configs --group-by client
+uv run keycloak-analyzer ./configs --group-by client
 ```
 
 **CI/CD Pipeline:**
 ```bash
 # Fails if Critical/High findings exist
-keycloak-analyzer ./configs --format json --output report.json --quiet
+uv run keycloak-analyzer ./configs --format json --output report.json --quiet
+```
+
+**Development Workflow:**
+```bash
+# Run tests
+uv run pytest
+
+# Type check and lint
+uv run mypy src/
+uv run ruff check src/
+
+# Format code
+uv run black src/ tests/
 ```
 
 ---
@@ -93,7 +110,6 @@ keycloak-analyzer ./configs --format json --output report.json --quiet
 | [Usage Guide](docs/usage-guide.md) | Command-line options, workflows, examples |
 | [Check Reference](docs/check-reference.md) | Complete list of 24+ security checks |
 | [Report Formats](docs/reports.md) | Details on Console, JSON, and HTML outputs |
-| [Just Commands](JUSTFILE-QUICKSTART.md) | Quick reference for `just` shortcuts |
 | [Development Guide](AGENTS.md) | Contributing, adding checks, architecture |
 
 ---

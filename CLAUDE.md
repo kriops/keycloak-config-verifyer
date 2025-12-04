@@ -11,7 +11,6 @@ When working on this project, refer to the appropriate documentation:
 | [docs/usage-guide.md](docs/usage-guide.md) | CLI usage, workflows, examples | End Users |
 | [docs/check-reference.md](docs/check-reference.md) | Complete security check list | Security Auditors |
 | [docs/reports.md](docs/reports.md) | Report format details | All Users |
-| [JUSTFILE-QUICKSTART.md](JUSTFILE-QUICKSTART.md) | Just command reference | Developers |
 
 ## Quick Reference
 
@@ -21,21 +20,19 @@ uv venv && source .venv/bin/activate
 uv pip install -e ".[dev]"
 ```
 
-**Common Tasks:**
+**Common Commands:**
 ```bash
-just test              # Run tests
-just quality           # Type check + lint
-just analyze           # Analyze excluded/
-just ci                # Full CI pipeline
+uv run pytest                      # Run tests
+uv run mypy src/                   # Type check
+uv run ruff check src/             # Lint
+uv run black src/ tests/           # Format
+uv run keycloak-analyzer excluded/ # Analyze test configs
 ```
 
-**Direct Commands:**
-```bash
-pytest                 # Run tests
-mypy src/              # Type check
-ruff check src/        # Lint
-black src/ tests/      # Format
-```
+**Why use `uv run`?**
+- Automatically finds and uses the virtual environment
+- No need to activate `.venv` manually
+- Consistent across all environments
 
 **Key Principles:**
 - Always use `uv` for Python package management

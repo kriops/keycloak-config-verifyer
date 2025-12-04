@@ -337,25 +337,6 @@ print(f\"Improvement: {baseline['summary']['total_findings'] - current['summary'
 "
 ```
 
-## Using Just Commands
-
-If you have [just](https://github.com/casey/just) installed, use convenient shortcuts:
-
-```bash
-# Analyze
-just analyze
-
-# Generate reports
-just report-html
-just report-json
-just report-all
-
-# With custom grouping
-just analyze-group-by client
-```
-
-See [JUSTFILE-QUICKSTART.md](../JUSTFILE-QUICKSTART.md) for all commands.
-
 ## Troubleshooting
 
 ### No realm files found
@@ -402,4 +383,3 @@ If invalid, re-export from Keycloak Admin Console.
 - [docs/check-reference.md](check-reference.md) - Complete security check documentation
 - [docs/reports.md](reports.md) - Report format details
 - [AGENTS.md](../AGENTS.md) - Development guide
-- [JUSTFILE-QUICKSTART.md](../JUSTFILE-QUICKSTART.md) - Just command reference
